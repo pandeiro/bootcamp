@@ -26,6 +26,17 @@
  '[pandeiro.boot-http    :refer [serve]]
  '[deraen.boot-less      :refer [less]])
 
+(deftask once []
+  (comp
+   (reload)
+   (cljs-repl)
+   (less)
+   (cljs :source-map    true
+         :unified-mode  true
+         :optimizations :advanced)
+   (serve :port 8080 :dir "target")
+   (serve :port 9090 :handler 'backend/system)))
+
 (deftask dev []
   (comp 
    (watch)
