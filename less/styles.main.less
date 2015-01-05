@@ -1,3 +1,8 @@
+@import (less) "META-INF/resources/webjars/pure/0.5.0/grids-responsive-min.css";
+@import (less) "META-INF/resources/webjars/pure/0.5.0/pure-min.css";
+
+@boot-yellow: rgb(237, 196, 24);
+
 /* workaround for refresh issues in webkit-based browsers */
 @-webkit-keyframes androidBugfix {from { padding: 0; } to { padding: 0; }}
 body { -webkit-animation: androidBugfix infinite 1s; }
@@ -6,6 +11,7 @@ body { -webkit-animation: androidBugfix infinite 1s; }
 body {
     background-image: url('../img/bg.jpg');
     text-align: center;
+    color: @boot-yellow;
 }
 
 h1 {

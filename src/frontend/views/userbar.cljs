@@ -6,24 +6,33 @@
 
 (defn username-and-password [state class-name & content]
   [:div {:class-name class-name}
-   [input {:state state, :path [:username], :autofocus? true
-           :class-name :username, :placeholder :username}]
-   [input {:state state, :path [:password], :class-name :password
+   [input {:state state, :path [:username] :class-name :username, :placeholder :username}]
+   [input {:state state, :path [:password], :type :password :class-name :password
            :placeholder :password}]
    content])
 
 (defn signup [app-state]
   (let [form-state (atom {})]
     (fn [_]
-      [username-and-password :signup form-state
+      [:div {:class-name "pure-form signup"}
+       [input {:state form-state, :path [:email]
+               :class-name :email, :type :email, :placeholder :email}]
+       [input {:state form-state, :path [:username]
+               :class-name :username, :placeholder :username}]
+       [input {:state form-state, :path [:password],
+               :class-name :password, :type :password, :placeholder :password}]
        [button app-state :signup-send-click "Sign up" (fn [] @form-state)]
        [button app-state :signin-cancel-click "Cancel" nil]])))
 
 (defn signin [app-state]
   (let [form-state (atom {})]
     (fn [_]
-      [username-and-password :signin form-state
-       [button app-state :signin-send-click "Sign in" (fn [] @form-state)]
+      [username-and-password form-state (str "pure-form signin")
+       [button app-state :signin-send-click
+        "Sign in"
+        (fn [] @form-state)
+        ;; TODO: disable when empty
+        ]
        [button app-state :signin-cancel-click "Cancel" nil]])))
 
 (defn signup-or-signin [app-state]

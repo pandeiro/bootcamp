@@ -5,12 +5,15 @@
 
 (defn post-update [app-state]
   (let [form-state (r/atom {})]
-    [:div.post-update
-     [:textarea {:placeholder "Post update here..."
-                 :on-change #(record-in form-state [:post] %)}]
-     [button app-state :post-send-click
-      "Post"
-      (fn [] @form-state)
-      (fn []
-        (let [{:keys [post]} @form-state]
-          (or (not post) (empty? (s/trim post)))))]]))
+    (fn [_]
+      (if-not (:user @app-state)
+        [:div "Sign up today!"]
+        [:div.post-update
+         [:textarea {:placeholder "Post update here..."
+                     :on-change #(record-in form-state [:post] %)}]
+         [button app-state :post-send-click
+          "Post"
+          (fn [] @form-state)
+          (fn []
+            (let [{:keys [post]} @form-state]
+              (or (not post) (empty? (s/trim post)))))]]))))

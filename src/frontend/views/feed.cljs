@@ -1,5 +1,7 @@
 (ns frontend.views.feed)
 
 (defn feed [app-state]
-  [:div.feed])
+  (if-not (:user @app-state)
+    [:div "Look how nice it is!"]
+    [:div.feed]))
 
