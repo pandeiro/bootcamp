@@ -1,8 +1,10 @@
 language: clojure
 jdk:
-- oraclejdk8
+  - oraclejdk8
+services:
+  - redis-server
 install:
-- wget -O boot https://github.com/boot-clj/boot/releases/download/2.0.0-rc5/boot.sh
-- chmod 755 boot
-- ./boot -V
+  - wget -O boot https://github.com/boot-clj/boot/releases/download/2.0.0-rc5/boot.sh
+  - chmod 755 boot
+  - ./boot -V
 script: ./boot once
