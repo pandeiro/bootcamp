@@ -7,4 +7,6 @@ install:
   - wget -O boot https://github.com/boot-clj/boot/releases/download/2.0.0-rc4/boot.sh
   - chmod 755 boot
   - ./boot -V
-script: ./boot once
+script:
+  - mkdir target
+  - ./boot once
