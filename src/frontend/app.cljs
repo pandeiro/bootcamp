@@ -3,9 +3,8 @@
   (:require [cljs-http.client :as http]
             [cljs.core.async :as async :refer [<! chan]]
             [reagent.core :as r]
-            [alandipert.storage-atom :refer [local-storage]]
             [frontend.debug :refer [debug-events]]
-            [frontend.session :refer [app-state]]
+            [frontend.session :as session :refer [app-state]]
             [frontend.net :as xhr]
             [frontend.views.userbar :refer [user-status-bar]]
             [frontend.views.update :refer [post-update]]
@@ -23,10 +22,14 @@
   (let [tap (chan)]
     (async/tap (:read-events @app-state) tap)
     (go-loop []
-      (let [[name data] (<! tap)]
-        (.log js/console "event-loop" (pr-str [name data]))
-        (case name
+      (let [[event data] (<! tap)]
+        (.log js/console "event-loop" (pr-str [event data]))
+        (case event
           :signin-send-click (xhr/post :auth (:data data))
+          :signup-send-click (xhr/post :user (:data data))
+          :response (if (and (= (:url data) :auth)
+                             (= (:status data) 200))
+                      (session/assoc-user! (:body data)))
           nil)
         (recur)))))
 

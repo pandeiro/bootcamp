@@ -6,7 +6,8 @@
             [cljs-http.client :as xhr]))
 
 (def urls
-  {:auth "http://localhost:9090/auth"})
+  {:user "http://localhost:9090/user"
+   :auth "http://localhost:9090/auth"})
 
 (defn announce! [app-state k data]
   (async/put! (:write-events @app-state) [k data]))
@@ -27,7 +28,7 @@
                         (when (= :post method)
                           {:edn-params data})))]
     (announce! app-state :request {:method method, :url url, :data data})
-    (go (announce! app-state :response (assoc (<! request) :url url)))))
+    (go (announce! app-state :response (assoc (<! request) :url url, :data data)))))
 
 (defn get [url]
   (request {:method :get, :url url}))

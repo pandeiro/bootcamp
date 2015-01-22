@@ -1,5 +1,18 @@
 redis:
   image: redis:latest
+  volumes:
+    - volumes/redis:/data
+  command: redis-server --appendonly yes
   ports:
     - "6379:6379"
+
+# db:
+#   image: pandeiro/postgres-plv8:9.4
+#   volumes:
+#     - volumes/postgres:/var/lib/postgresql/data
+#   environment: # these SET the credentials in the container
+#     POSTGRES_USER: pguser
+#     POSTGRES_PASSWORD: pgpass
+#   ports:
+#     - "5432:5432"
 

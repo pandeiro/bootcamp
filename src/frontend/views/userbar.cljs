@@ -5,29 +5,28 @@
             [frontend.views.util :refer [input button]]))
 
 (defn username-and-password [state class-name & content]
-  [:div {:class-name class-name}
-   [input {:state state, :path [:username] :class-name :username, :placeholder :username}]
-   [input {:state state, :path [:password], :type :password :class-name :password
-           :placeholder :password}]
+  [:div {:class-name (str "pure-form " (name class-name))}
+   [input {:state state, :path [:email]
+           :type :email, :class-name :username, :placeholder :email}]
+   [input {:state state, :path [:password]
+           :type :password :class-name :password, :placeholder :password}]
    content])
 
 (defn signup [app-state]
   (let [form-state (atom {})]
     (fn [_]
-      [:div {:class-name "pure-form signup"}
-       [input {:state form-state, :path [:email]
-               :class-name :email, :type :email, :placeholder :email}]
-       [input {:state form-state, :path [:username]
-               :class-name :username, :placeholder :username}]
-       [input {:state form-state, :path [:password],
-               :class-name :password, :type :password, :placeholder :password}]
-       [button app-state :signup-send-click "Sign up" (fn [] @form-state)]
+      [username-and-password form-state :signin
+       [button app-state :signup-send-click
+        "Sign up"
+        (fn [] @form-state)
+        ;; TODO: disable when empty
+        ]
        [button app-state :signin-cancel-click "Cancel" nil]])))
 
 (defn signin [app-state]
   (let [form-state (atom {})]
     (fn [_]
-      [username-and-password form-state (str "pure-form signin")
+      [username-and-password form-state :signin
        [button app-state :signin-send-click
         "Sign in"
         (fn [] @form-state)
@@ -63,11 +62,15 @@
         (let [events (chan)]
           (async/tap (:read-events @app-state) events)
           (go-loop []
-            (condp = (first (<! events))
-              :signin-click (reset! view-state :signin)
-              :signup-click (reset! view-state :signup)
-              :signin-cancel-click (reset! view-state :main)
-              nil)
+            (let [[event data] (<! events)]
+              (condp = event
+                :signin-click (reset! view-state :signin)
+                :signup-click (reset! view-state :signup)
+                :signin-cancel-click (reset! view-state :main)
+                :response (when (or (= (:url data) :auth)
+                                    (= (:url data) :user))
+                            (reset! view-state :main))
+                nil))
             (when @mounted? (recur)))))
       :component-will-unmount
       (fn [_]
