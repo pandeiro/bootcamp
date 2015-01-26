@@ -99,3 +99,8 @@
    (repl :server true)
    (compile-frontend)
    (serve-frontend)))
+
+(deftask ci []
+  (comp
+   (serve-backend)
+   (compile-frontend)))

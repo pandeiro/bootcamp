@@ -9,4 +9,4 @@ install:
   - ./boot -V
 script:
   - mkdir target
-  - ./boot once
+  - ./boot ci
