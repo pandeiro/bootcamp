@@ -1,25 +1,37 @@
 (ns frontend.session
+  (:require-macros [frontend.static :as static])
   (:require [cljs.core.async :as async :refer [<! chan]]
             [reagent.core :as r]
             [frontend.store :refer [store watch-and-store]]))
 
 (def app-state
+  "Application state holding atom.
+
+  Holds data (which is cached to localStorage), along
+  with communications channels and static, environment-
+  sensitive configuration."
   (let [events (chan)]
     (r/atom
-     {:user         (or (:user @store)   nil)
-      :logins       (or (:logins @store) #{})
-      :data         (or (:data @store)   {})
+     {:data         (or (:data @store) {})
       :write-events events
-      :read-events  (async/mult events)})))
+      :read-events  (async/mult events)
+      :config       (static/read-config)})))
 
 (-> app-state
-  (watch-and-store [:user])
-  (watch-and-store [:logins])
   (watch-and-store [:data]))
 
-(defn assoc-user! [user]
-  (swap! app-state assoc :user user)
-  (swap! app-state update-in [:logins] conj user))
+;;
+;; Events
+;;
+(defn put-event! [data]
+  (async/put! (:write-events @app-state) data))
 
-(defn dissoc-user! [user]
-  (swap! app-state assoc :user nil))
+;;
+;; Helpers
+;;
+(defn new-client-id []
+  (str
+   (.getTime (js/Date.)) "-"
+   (apply str (repeatedly 10 #(first (shuffle (range 10)))))))
+
+

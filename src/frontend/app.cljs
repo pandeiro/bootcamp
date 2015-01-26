@@ -4,38 +4,33 @@
             [cljs.core.async :as async :refer [<! chan]]
             [reagent.core :as r]
             [frontend.debug :refer [debug-events]]
-            [frontend.session :as session :refer [app-state]]
-            [frontend.net :as xhr]
-            [frontend.views.userbar :refer [user-status-bar]]
-            [frontend.views.update :refer [post-update]]
-            [frontend.views.feed :refer [feed]]))
-
-(defn view [app-state]
-  [:div.container
-   [user-status-bar app-state]
-   [post-update app-state]
-   [feed app-state]])
+            [frontend.session :as session :refer [app-state new-client-id]]
+            [frontend.net :as net]
+            [frontend.socket :as ws]
+            [frontend.github :as gh]
+            [frontend.views :as views]))
 
 (def root (.getElementById js/document "root"))
 
-(defn event-loop [app-state]
+(defonce event-loop
   (let [tap (chan)]
     (async/tap (:read-events @app-state) tap)
     (go-loop []
       (let [[event data] (<! tap)]
-        (.log js/console "event-loop" (pr-str [event data]))
         (case event
-          :signin-send-click (xhr/post :auth (:data data))
-          :signup-send-click (xhr/post :user (:data data))
-          :response (if (and (= (:url data) :auth)
-                             (= (:status data) 200))
-                      (session/assoc-user! (:body data)))
+          :repo-info-request
+          (net/retrieve-github-repo-data app-state data)
           nil)
         (recur)))))
 
 (defn init []
-  ;;(debug-events app-state)
-  (event-loop app-state)
-  (r/render [view app-state] root))
+  (async/put! (:write-events @app-state) [:init (str (js/Date.))])
+  (when-not (get-in @app-state [:data :client-id])
+    (swap! app-state assoc-in [:data :client-id] (new-client-id)))
+  (debug-events app-state)
+  (net/retrieve-data app-state)
+  (gh/repo-info-worker app-state)
+  (ws/connect app-state)
+  (r/render [views/main app-state] root)
+  (.log js/console (pr-str (sort (keys (get-in @app-state [:data :users]))))))
 
-(.addEventListener js/window "DOMContentLoaded" init)

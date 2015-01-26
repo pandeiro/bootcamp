@@ -1,0 +1,8 @@
+{:urls
+ {:host {:dev  "http://localhost:9090"
+         :prod "http://bootcamp.herokuapp.com"}
+  :ws   {:dev  "ws://localhost:9090/ws"
+         :prod "ws://bootcamp.herokuapp.com/ws"}
+  :api  "/api"}
+ :keys
+ {:local-storage "bootcamp-data"}}

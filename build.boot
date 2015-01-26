@@ -1,17 +1,16 @@
 (set-env!
  :source-paths   #{"src" "less"}
- :resource-paths #{"html"}
+ :resource-paths #{"html" "conf" "data"}
  :dependencies   '[;; boot
-                   [adzerk/boot-cljs      "0.0-2629-1" :scope "test"]
-                   [adzerk/boot-cljs-repl "0.1.7"      :scope "test"]
-                   [adzerk/boot-reload    "0.2.0"      :scope "test"]
-                   [adzerk/boot-test      "1.0.3"      :scope "test"]
-                   [pandeiro/boot-http    "0.4.2"      :scope "test"]
-                   [deraen/boot-less      "0.2.0"      :scope "test"]
+                   ;;[org.clojure/clojurescript "0.0-2723"   :scope "test"]
+                   [adzerk/boot-cljs          "0.0-2629-9" :scope "test"]
+                   [pandeiro/boot-http        "0.6.1"      :scope "test"]
+                   [deraen/boot-less          "0.2.0"      :scope "test"]
+                   [adzerk/boot-reload        "0.2.4"      :scope "test"]
+                   ;;[adzerk/boot-cljs-repl     "0.1.8"      :scope "test"]
 
                    ;; app
                    [org.clojure/core.async  "0.1.346.0-17112a-alpha"]
-                   [com.taoensso/carmine    "2.9.0"]
                    [compojure               "1.3.1"]
                    [ring/ring-defaults      "0.1.3"]
                    [ring/ring-devel         "1.3.2"]
@@ -26,37 +25,77 @@
                    [alandipert/storage-atom "1.2.3"]])
 
 (require
+ '[boot.util             :as util]
+ '[boot.pod              :as pod]
+ '[clojure.java.io       :as io]
  '[adzerk.boot-cljs      :refer [cljs]]
- '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
- '[adzerk.boot-reload    :refer [reload]]
- '[adzerk.boot-test      :refer [test]]
  '[pandeiro.boot-http    :refer [serve]]
- '[deraen.boot-less      :refer [less]])
+ '[deraen.boot-less      :refer [less]]
+ '[adzerk.boot-reload    :refer [reload]]
+ ;;'[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
+ )
 
-(deftask once []
+(defn add-react [& [{:keys [min?]}]] 
+  (let [t (temp-dir!)]
+    (with-pre-wrap fileset
+      (let [react-file (io/file t "react.js")]
+        (let [react-resource (if min? "reagent/react.min.js"
+                                 "reagent/react.js")]
+          (util/info "<< Adding React.js >>\n")
+          (spit react-file (slurp (io/resource react-resource)))
+          (-> fileset
+            (add-asset t)
+            commit!))))))
+
+(deftask run-once
+  "Run a function of no args just one time in a pipeline"
+  [f function SYM sym "The function to run."]
+  (let [worker (pod/make-pod (get-env))
+        start  (delay (pod/with-eval-in worker
+                        (require (symbol (namespace '~function)) :reload)
+                        (def instance (future ((resolve '~function)))))
+                      (util/info "<< Running %s once... >>\n" (str function)))]
+    (cleanup
+     (util/info "<< Stopping instance of %s... >>\n" (str function))
+     (pod/with-eval-in worker
+       (future-cancel instance)))
+    (with-pre-wrap fileset
+      @start
+      fileset)))
+
+;; WIP
+;; (deftask release []
+;;   (comp
+;;    (less)
+;;    (add-react {:min? true})
+;;    (cljs :source-map    true
+;;          :optimizations :advanced)))
+
+(deftask serve-backend
+  [d dev bool "Run in dev-mode with reloading of Clojure files"]
+  (serve :port    9090
+         :httpkit true
+         :init    'backend.services.github/start-worker
+         :cleanup 'backend.services.github/stop-worker
+         :handler (if dev
+                    'backend/system-dev
+                    'backend/system)))
+
+(deftask compile-frontend []
   (comp
    (less)
-   (cljs :source-map    true
-         :unified-mode  true
-         :optimizations :advanced)
-   (test :namespaces ['tests.backend])
-   (serve :port 8080 :dir "target")
-   (serve :port 9090 :handler 'backend/system)))
+   (add-react)
+   (cljs :optimizations :none, :source-map true)))
+
+(deftask serve-frontend []
+  (serve :port 8080, :dir "target"))
 
 (deftask dev []
-  (comp 
+  (comp
+   (serve-backend)
    (watch)
    (speak)
-   (reload)
-   (cljs-repl)
-   (less)
-   (cljs :source-map    true
-         :unified-mode  true
-         :optimizations :advanced)
-   (serve :port 8080 :dir "target")
-   (serve :port 9090 :handler 'backend/system)))
-
-(deftask tests-watch []
-  (comp
-   (watch)
-   (test :namespaces ['tests.backend])))
+   (reload :on-jsload 'frontend.app/init)
+   (repl :server true)
+   (compile-frontend)
+   (serve-frontend)))
