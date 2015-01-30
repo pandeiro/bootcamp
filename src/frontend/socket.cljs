@@ -1,6 +1,7 @@
 (ns frontend.socket
   (:require [cljs.core.async :as async]
-            [cljs.reader :refer [read-string]]))
+            [cljs.reader :refer [read-string]]
+            [shodan.console :as console :include-macros true]))
 
 (defn connect [app-state]
   (let [ws-url (get-in @app-state [:config :urls :ws])
@@ -18,9 +19,9 @@
               (send! [:cached-repos-data (:repos data)])
               ;; send kv-by-kv b/c of httpkit ws limitations
               (doseq [repo-info (:repo-info data)]
-                (.log js/console "debug send repo info")
+                (console/log "debug send repo info")
                 (let [[k v] repo-info]
-                  (.log js/console (pr-str [:cached-repo-info-data [k (select-keys v [:updated_at])]])))
+                  (console/log (pr-str [:cached-repo-info-data [k (select-keys v [:updated_at])]])))
                 (send! [:cached-repo-info-data repo-info])))))
     
     ;; Turn everything over to the event-loop

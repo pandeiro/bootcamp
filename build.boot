@@ -23,6 +23,7 @@
                    [cljsjs/react            "0.12.2-5"]
                    [cljsjs/moment           "2.6.0-3"]
                    [reagent                 "0.5.0-alpha"]
+                   [shodan                  "0.4.1"]
                    [cljs-http               "0.1.24"]
                    [alandipert/storage-atom "1.2.3"]])
 

@@ -122,7 +122,6 @@
       (let [boot-svg  (get-in @app-state [:data :assets :boot])
             repos     (get-in @app-state [:data :repos])
             repo-info (get-in @app-state [:data :repo-info])]
-        (.log js/console "rendering boot-repos-list")
         [:div.repos.shortstack
          [:table
           [:thead
@@ -150,7 +149,8 @@
        :on-key-down
        (fn [e]
          (when (= 13 (.-keyCode e))
-           (.log js/console "SEARCH!")))}]]))
+           ;; submit on enter? or filter while typing?
+           ))}]]))
 
 (defn main [app-state]
   [:div.container

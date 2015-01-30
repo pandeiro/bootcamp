@@ -27,14 +27,11 @@
         (recur)))))
 
 (defn init []
-  (async/put! (:write-events @app-state) [:init (str (js/Date.))])
   (when-not (get-in @app-state [:data :client-id])
     (swap! app-state assoc-in [:data :client-id] (new-client-id)))
   (debug-events app-state)
   (net/retrieve-data app-state)
   (gh/repo-info-worker app-state)
   (ws/connect app-state)
-  (r/render [views/main app-state] root)
-  ;; moment().format('MMMM Do YYYY, h:mm:ss a'
-  (.log js/console (.format (js/moment) "MMMM Do YYYY, h:mm:ss a")))
+  (r/render [views/main app-state] root))
 
