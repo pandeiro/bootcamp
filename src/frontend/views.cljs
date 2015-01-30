@@ -28,7 +28,7 @@
    (format "%s/%s" user repo)])
 
 (def boot-repo-columns
-  [:user :repo :updated :build :stars])
+  [:user :repo :updated :stars])
 
 (defn- rel-time [x] x) ;; TODO: momentjs
 
@@ -46,9 +46,6 @@
        [github-avatar url user 25]
        user)]))
 
-(defn boot-repo-build [data]
-  [:td.build "build.boot (fixme)"])
-
 (defn boot-repo-reponame [data]
   [:td.repo (get-in data [:repo :repo])])
 
@@ -59,8 +56,7 @@
   [:td.stars (get-in data [:repo-info :stargazers_count])])
 
 (def boot-repo-cells
-  {:build   boot-repo-build
-   :user    boot-repo-user
+  {:user    boot-repo-user
    :repo    boot-repo-reponame
    :updated boot-repo-updated
    :stars   boot-repo-stars})
