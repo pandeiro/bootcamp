@@ -84,55 +84,39 @@ button {
 }
 
 div.repos {
-  table {
-    cursor: default;
-    width: 100%;
+
+  .list-container {
+  }
+
+  .row-container:nth-child(odd) {
+    background: fade(@tan, 50);
+  }
+  .row-container:nth-child(even) {
+    background: @tan;
+  }
+
+  .row-container {
+    .pure-g-r;
+    // flex-direction: row;
+    // align-items: center;
+    // justify-content: left;
     text-align: left;
 
-    tr > th:nth-child(1), tr > td:nth-child(1) {
-      padding-left: 24px;
-    }
-
-    td, th {
-      // padding: 0.25em 0.5em;
-      height: 40px;
-    }
-
-    thead {
-      background: none;
-      color: #fff;
-    }
-
-    tbody {
-      background: @tan;
-      tr {
-        transition: color 0.15s ease-out;
+    .row-item {
+      .pure-u-1;
+      .pure-u-md-1-3;
+      display: flex;
+      flex-grow: 1;
+      img {
+        display: block;
       }
-      tr:hover {
-        color: lighten(@darkgray, 10);
-      }
-      tr:nth-child(odd) {
-        background: fade(@tan, 50);
-      }
+      align-items: center;
     }
-
-    span.user {
-      padding-right: 0.5em;
-    }
-
-    span.repo-name {
-
-    }
-
-    span.repositories-filter {
-      padding-left: 0.5em;
-
-      input {
-        border: none;
-        background: none;
-        color: @lightgray;
-      }
+    .row-item.repo {
+      display: flex;
+      flex-direction: row;
     }
   }
+
 }
 

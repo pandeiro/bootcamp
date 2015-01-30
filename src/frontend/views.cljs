@@ -30,32 +30,41 @@
 (def boot-repo-columns
   [:repo :updated :stars])
 
-(defn- rel-time [x] x) ;; TODO: momentjs
+(defn- rel-time [x] x)
 
 (defn github-avatar [url user size]
-  [:a {:href (format "https://github.com/%s" user)}
-   [:img
-    {:src (github-icon url) :width size :height size :title user :alt user}]])
+  [:a
+   {:href (format "https://github.com/%s" user)
+    :target "_blank"}
+   [:img {:src (github-icon url) :width size :height size :title user}]])
 
 (defn boot-repo-user [data]
   (let [user (get-in data [:repo :user])
         url  (get-in @session/app-state [:data :users user :avatar_url])]
-    [:span.user
-     (if url
-       [github-avatar url user 25]
-       user)]))
+    [:div.repo-user (if url
+                      [github-avatar url user 25]
+                      user)]))
+
+(defn boot-repo-name [data]
+  (let [repo (get-in data [:repo :repo])
+        user (get-in data [:repo :user])]
+    [:div.repo-name
+     [:a {:href (format "https://github.com/%s/%s" user repo)
+          :target "_blank"}
+      repo]]))
 
 (defn boot-repo-repository [data]
-  [:td.repo
+  [:div.row-item.repo
    [boot-repo-user data]
-   [:span.repo-name
-    (get-in data [:repo :repo])]])
+   [boot-repo-name data]])
 
 (defn boot-repo-updated [data]
-  [:td.updated (rel-time (get-in data [:repo-info :updated_at]))])
+  [:div.row-item.updated
+   (rel-time (get-in data [:repo-info :updated_at]))])
 
 (defn boot-repo-stars [data]
-  [:td.stars (get-in data [:repo-info :stargazers_count])])
+  [:div.row-item.stars
+   (get-in data [:repo-info :stargazers_count])])
 
 (def boot-repo-cells
   {:repo    boot-repo-repository
@@ -75,7 +84,7 @@
     (r/create-class
      {:render
       (fn [_]
-        [:tr.repo
+        [:div.row-container
          (for [col boot-repo-columns]
            (let [boot-repo-cell (get boot-repo-cells col)]
              ^{:key (str (get-in repo-data [:repo :user])
@@ -102,6 +111,12 @@
 (defn has-substring? [sub target]
   (not (neg? (.indexOf target sub))))
 
+;; (for [col boot-repo-columns]
+;;   ^{:key (str "heading" col)}
+;;   (if (= col :repo)
+;;     [repo-name-header repo-name-filter]
+;;     [:th (name col)]))
+
 (defn boot-repos-list [app-state]
   (let [repo-name-filter (r/atom nil)]
     (retrieve-boot-svg app-state)
@@ -110,20 +125,12 @@
             repos     (get-in @app-state [:data :repos])
             repo-info (get-in @app-state [:data :repo-info])]
         [:div.repos.shortstack
-         [:table
-          [:thead
-           [:tr
-            (for [col boot-repo-columns]
-              ^{:key (str "heading" col)}
-              (if (= col :repo)
-                [repo-name-header repo-name-filter]
-                [:th (name col)]))]]
-          [:tbody
-           (for [repo repos]
-             ^{:key (str repo)}
-             [boot-repo
-              {:repo repo, :repo-info (get-repo-info repo-info repo)}
-              boot-svg])]]]))))
+         [:div.list-container
+          (for [repo repos]
+            ^{:key (str repo)}
+            [boot-repo
+             {:repo repo, :repo-info (get-repo-info repo-info repo)}
+             boot-svg])]]))))
 
 (defn search [app-state]
   (let [repos (get-in @app-state [:data :repos])]
