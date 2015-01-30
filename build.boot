@@ -20,7 +20,7 @@
                    [http-kit                "2.1.18"]
                    [enlive                  "1.1.5"]
                    [org.webjars/pure        "0.5.0"]
-                   [cljsjs/moment           "2.9.0-1"]
+                   [cljsjs/moment           "2.6.0-3"]
                    [reagent                 "0.5.0-alpha"]
                    [cljs-http               "0.1.24"]
                    [alandipert/storage-atom "1.2.3"]])
