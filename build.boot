@@ -20,6 +20,7 @@
                    [http-kit                "2.1.18"]
                    [enlive                  "1.1.5"]
                    [org.webjars/pure        "0.5.0"]
+                   [cljsjs/react            "0.12.2-5"]
                    [cljsjs/moment           "2.6.0-3"]
                    [reagent                 "0.5.0-alpha"]
                    [cljs-http               "0.1.24"]
@@ -36,18 +37,6 @@
  '[adzerk.boot-test      :refer [test]]
  ;;'[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
  )
-
-(defn add-react [& [{:keys [min?]}]] 
-  (let [t (temp-dir!)]
-    (with-pre-wrap fileset
-      (let [react-file (io/file t "react.js")]
-        (let [react-resource (if min? "reagent/react.min.js"
-                                 "reagent/react.js")]
-          (util/info "<< Adding React.js >>\n")
-          (spit react-file (slurp (io/resource react-resource)))
-          (-> fileset
-            (add-asset t)
-            commit!))))))
 
 (deftask run-once
   "Run a function of no args just one time in a pipeline"
@@ -86,7 +75,6 @@
 (deftask compile-frontend []
   (comp
    (less)
-   (add-react)
    (cljs :optimizations :none, :source-map true)))
 
 (deftask serve-frontend []

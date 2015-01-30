@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require
    cljsjs.moment
+   cljsjs.react
    [cljs-http.client :as http]
    [cljs.core.async :as async :refer [<! chan]]
    [reagent.core :as r]
