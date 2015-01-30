@@ -28,26 +28,28 @@
    (format "%s/%s" user repo)])
 
 (def boot-repo-columns
-  [:user :repo :updated :stars])
+  [:repo :updated :stars])
 
 (defn- rel-time [x] x) ;; TODO: momentjs
 
 (defn github-avatar [url user size]
-  [:div
-   [:a {:href (format "https://github.com/%s" user)}
-    [:img
-     {:src (github-icon url) :width size :height size :title user :alt user}]]])
+  [:a {:href (format "https://github.com/%s" user)}
+   [:img
+    {:src (github-icon url) :width size :height size :title user :alt user}]])
 
 (defn boot-repo-user [data]
   (let [user (get-in data [:repo :user])
         url  (get-in @session/app-state [:data :users user :avatar_url])]
-    [:td.user
+    [:span.user
      (if url
        [github-avatar url user 25]
        user)]))
 
-(defn boot-repo-reponame [data]
-  [:td.repo (get-in data [:repo :repo])])
+(defn boot-repo-repository [data]
+  [:td.repo
+   [boot-repo-user data]
+   [:span.repo-name
+    (get-in data [:repo :repo])]])
 
 (defn boot-repo-updated [data]
   [:td.updated (rel-time (get-in data [:repo-info :updated_at]))])
@@ -56,8 +58,7 @@
   [:td.stars (get-in data [:repo-info :stargazers_count])])
 
 (def boot-repo-cells
-  {:user    boot-repo-user
-   :repo    boot-repo-reponame
+  {:repo    boot-repo-repository
    :updated boot-repo-updated
    :stars   boot-repo-stars})
 
@@ -90,8 +91,8 @@
 
 (defn repo-name-header [repo-name-filter]
   [:th
-   "repository"
-   [:span
+   "Repositories"
+   [:span.repositories-filter
     [:input
      {:type "search" :placeholder "filter by name"
       :on-change (fn [e]

@@ -2,6 +2,7 @@
 @import (less) "META-INF/resources/webjars/pure/0.5.0/pure-min.css";
 
 @darkgray: #2b2b2b;
+@lightgray: #cccccc;
 @boot-yellow: rgb(237, 196, 24);
 @tan: fade(lighten(@boot-yellow, 25), 70);
 
@@ -113,10 +114,23 @@ div.repos {
       tr:nth-child(odd) {
         background: fade(@tan, 50);
       }
-      td.user {
-        a {
-          height: 0; width: 0;
-        }
+    }
+
+    span.user {
+      padding-right: 0.5em;
+    }
+
+    span.repo-name {
+
+    }
+
+    span.repositories-filter {
+      padding-left: 0.5em;
+
+      input {
+        border: none;
+        background: none;
+        color: @lightgray;
       }
     }
   }
