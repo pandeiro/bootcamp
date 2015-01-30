@@ -14,5 +14,5 @@
                      chosen
                      (take 5 (shuffle repos)))]
         (session/put-event! [:repo-info-request repo]))
-      (<! (async/timeout (* 1000 60 5)))
+      (<! (async/timeout (* 1000 60 10)))
       (recur))))

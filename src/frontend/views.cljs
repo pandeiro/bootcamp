@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :as async :refer [chan <!]]
             [goog.string.format]
+            [clojure.string :as s]
             [reagent.core :as r]
             [cljs-http.client :as http]
             [frontend.session :as session]
@@ -27,7 +28,7 @@
    (format "%s/%s" user repo)])
 
 (def boot-repo-columns
-  [:user :repo :updated :build :stars])
+  [:user :repo :updated :fork? :build :stars])
 
 (defn- rel-time [x] x) ;; TODO: momentjs
 
@@ -57,12 +58,16 @@
 (defn boot-repo-stars [data]
   [:td.stars (get-in data [:repo-info :stargazers_count])])
 
+(defn boot-repo-fork? [data]
+  [:td.fork (str (get-in data [:repo-info :fork]))])
+
 (def boot-repo-cells
   {:build   boot-repo-build
    :user    boot-repo-user
    :repo    boot-repo-reponame
    :updated boot-repo-updated
-   :stars   boot-repo-stars})
+   :stars   boot-repo-stars
+   :fork?   boot-repo-fork?})
 
 (defn- mount-boot-logo-svg [parent svg-src size]
   (let [el (.querySelector (r/dom-node parent) ".svg")]
@@ -97,26 +102,42 @@
 (defn- get-repo-info [repo-info repo]
   (get repo-info repo))
 
+(defn repo-name-header [repo-name-filter]
+  [:th
+   "repository"
+   [:span
+    [:input
+     {:type "search" :placeholder "filter by name"
+      :on-change (fn [e]
+                   (let [string (s/trim (.-value (.-target e)))]
+                     (reset! repo-name-filter string)))}]]])
+
+(defn has-substring? [sub target]
+  (not (neg? (.indexOf target sub))))
+
 (defn boot-repos-list [app-state]
-  (retrieve-boot-svg app-state)
-  (fn [_]
-    (let [boot-svg  (get-in @app-state [:data :assets :boot])
-          repos     (get-in @app-state [:data :repos])
-          repo-info (get-in @app-state [:data :repo-info])]
-      (.log js/console "rendering boot-repos-list")
-      [:div.repos.shortstack
-       [:table
-        [:thead
-         [:tr
-          (for [col boot-repo-columns]
-            ^{:key (str "heading" col)}
-            [:th (name col)])]]
-        [:tbody
-         (for [repo repos]
-           ^{:key (str repo)}
-           [boot-repo
-            {:repo repo, :repo-info (get-repo-info repo-info repo)}
-            boot-svg])]]])))
+  (let [repo-name-filter (r/atom nil)]
+    (retrieve-boot-svg app-state)
+    (fn [_]
+      (let [boot-svg  (get-in @app-state [:data :assets :boot])
+            repos     (get-in @app-state [:data :repos])
+            repo-info (get-in @app-state [:data :repo-info])]
+        (.log js/console "rendering boot-repos-list")
+        [:div.repos.shortstack
+         [:table
+          [:thead
+           [:tr
+            (for [col boot-repo-columns]
+              ^{:key (str "heading" col)}
+              (if (= col :repo)
+                [repo-name-header repo-name-filter]
+                [:th (name col)]))]]
+          [:tbody
+           (for [repo repos]
+             ^{:key (str repo)}
+             [boot-repo
+              {:repo repo, :repo-info (get-repo-info repo-info repo)}
+              boot-svg])]]]))))
 
 (defn search [app-state]
   (let [repos (get-in @app-state [:data :repos])]
@@ -133,5 +154,5 @@
 
 (defn main [app-state]
   [:div.container
-   [search app-state]
+   ;;[search app-state]
    [boot-repos-list app-state]])

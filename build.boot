@@ -1,12 +1,12 @@
 (set-env!
- :source-paths   #{"src" "less"}
+ :source-paths   #{"src" "less" "test"}
  :resource-paths #{"html" "conf" "data"}
  :dependencies   '[;; boot
-                   ;;[org.clojure/clojurescript "0.0-2723"   :scope "test"]
-                   [adzerk/boot-cljs          "0.0-2629-9" :scope "test"]
+                   [adzerk/boot-cljs          "0.0-2727-0" :scope "test"]
                    [pandeiro/boot-http        "0.6.1"      :scope "test"]
                    [deraen/boot-less          "0.2.0"      :scope "test"]
                    [adzerk/boot-reload        "0.2.4"      :scope "test"]
+                   [adzerk/boot-test          "1.0.2"      :scope "test"]
                    ;;[adzerk/boot-cljs-repl     "0.1.8"      :scope "test"]
 
                    ;; app
@@ -20,6 +20,7 @@
                    [http-kit                "2.1.18"]
                    [enlive                  "1.1.5"]
                    [org.webjars/pure        "0.5.0"]
+                   [cljsjs/moment           "2.9.0-1"]
                    [reagent                 "0.5.0-alpha"]
                    [cljs-http               "0.1.24"]
                    [alandipert/storage-atom "1.2.3"]])
@@ -32,6 +33,7 @@
  '[pandeiro.boot-http    :refer [serve]]
  '[deraen.boot-less      :refer [less]]
  '[adzerk.boot-reload    :refer [reload]]
+ '[adzerk.boot-test      :refer [test]]
  ;;'[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
  )
 
@@ -96,7 +98,6 @@
    (watch)
    (speak)
    (reload :on-jsload 'frontend.app/init)
-   (repl :server true)
    (compile-frontend)
    (serve-frontend)))
 

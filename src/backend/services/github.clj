@@ -90,7 +90,7 @@
     (swap! stores/repos conj repo)
     (warn "Tried to add invalid repo: %s" (str repo))))
 
-(defn- merge-if-newer [existing [entry-key entry-data]]
+(defn merge-if-newer [existing [entry-key entry-data]]
   (let [existing-entry (get existing entry-key)]
     (if (empty? existing-entry)
       (merge existing (vector entry-key entry-data))
@@ -106,7 +106,8 @@
   When a map entry is already present in the store, it is only merged
   if its :updated_at key is later than the existing entry's."
   [repo-info]
-  (swap! stores/repo-info #(reduce merge-if-newer % repo-info)))
+  (info "Adding repo info: %s" (pr-str (first (keys repo-info))))
+  (swap! stores/repo-info merge-if-newer repo-info))
 
 ;;; Worker
 

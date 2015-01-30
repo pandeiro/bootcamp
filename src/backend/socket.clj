@@ -26,12 +26,15 @@
      (fn [raw]
        (let [[topic data] (edn/read-string raw)]
          (case topic
-           :cached-data (let [{:keys [repos repo-info]} data]
-                          (doseq [repo repos]
-                            (when repo
-                              (async/put! gh-repos-queue repo)))
-                          (when repo-info
-                            (async/put! gh-repo-info-queue repo-info)))
+           :cached-repos-data
+           (let [{:keys [repos]} data]
+             (doseq [repo repos]
+               (when repo
+                 (async/put! gh-repos-queue repo))))
+           :cached-repo-info-data
+           (let [[repo repo-info] data]
+             (when (and repo repo-info)
+               (async/put! gh-repo-info-queue repo-info)))
            nil)
          (info "Received socket data: %d repos and %d repo details"
                (count (:repos data))

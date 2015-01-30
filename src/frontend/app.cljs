@@ -1,14 +1,16 @@
 (ns frontend.app
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
-  (:require [cljs-http.client :as http]
-            [cljs.core.async :as async :refer [<! chan]]
-            [reagent.core :as r]
-            [frontend.debug :refer [debug-events]]
-            [frontend.session :as session :refer [app-state new-client-id]]
-            [frontend.net :as net]
-            [frontend.socket :as ws]
-            [frontend.github :as gh]
-            [frontend.views :as views]))
+  (:require
+   cljsjs.moment
+   [cljs-http.client :as http]
+   [cljs.core.async :as async :refer [<! chan]]
+   [reagent.core :as r]
+   [frontend.debug :refer [debug-events]]
+   [frontend.session :as session :refer [app-state new-client-id]]
+   [frontend.net :as net]
+   [frontend.socket :as ws]
+   [frontend.github :as gh]
+   [frontend.views :as views]))
 
 (def root (.getElementById js/document "root"))
 
@@ -32,5 +34,6 @@
   (gh/repo-info-worker app-state)
   (ws/connect app-state)
   (r/render [views/main app-state] root)
-  (.log js/console (pr-str (sort (keys (get-in @app-state [:data :users]))))))
+  ;; moment().format('MMMM Do YYYY, h:mm:ss a'
+  (.log js/console (.format (js/moment) "MMMM Do YYYY, h:mm:ss a")))
 

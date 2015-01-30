@@ -4,12 +4,13 @@
             [reagent.core :as r]
             [frontend.store :refer [store watch-and-store]]))
 
-(def app-state
-  "Application state holding atom.
+(defonce ^{:doc "
+Application state holding atom.
 
-  Holds data (which is cached to localStorage), along
-  with communications channels and static, environment-
-  sensitive configuration."
+Holds data (which is cached to localStorage), along
+with communications channels and static, environment-
+sensitive configuration."}
+  app-state
   (let [events (chan)]
     (r/atom
      {:data         (or (:data @store) {})
