@@ -69,18 +69,12 @@
         (.setAttribute svg "width" size)
         (.setAttribute svg "height" size)))))
 
-(defn on-repo-click [data]
-  (fn [_]
-    (if-let [repo-info (not-empty (get-in data [:repo-info]))]
-      (js/alert (pr-str repo-info))
-      (session/put-event! [:repo-info-request (get-in data [:repo])]))))
-
 (defn boot-repo [repo-data boot-svg]
   (let [logo-size 90]
     (r/create-class
      {:render
       (fn [_]
-        [:tr.repo {:on-click (on-repo-click repo-data)}
+        [:tr.repo
          (for [col boot-repo-columns]
            (let [boot-repo-cell (get boot-repo-cells col)]
              ^{:key (str (get-in repo-data [:repo :user])
