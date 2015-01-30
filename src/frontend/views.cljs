@@ -28,7 +28,7 @@
    (format "%s/%s" user repo)])
 
 (def boot-repo-columns
-  [:user :repo :updated :fork? :build :stars])
+  [:user :repo :updated :build :stars])
 
 (defn- rel-time [x] x) ;; TODO: momentjs
 
@@ -58,16 +58,12 @@
 (defn boot-repo-stars [data]
   [:td.stars (get-in data [:repo-info :stargazers_count])])
 
-(defn boot-repo-fork? [data]
-  [:td.fork (str (get-in data [:repo-info :fork]))])
-
 (def boot-repo-cells
   {:build   boot-repo-build
    :user    boot-repo-user
    :repo    boot-repo-reponame
    :updated boot-repo-updated
-   :stars   boot-repo-stars
-   :fork?   boot-repo-fork?})
+   :stars   boot-repo-stars})
 
 (defn- mount-boot-logo-svg [parent svg-src size]
   (let [el (.querySelector (r/dom-node parent) ".svg")]
