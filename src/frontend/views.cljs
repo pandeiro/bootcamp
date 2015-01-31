@@ -100,16 +100,6 @@
 (defn- get-repo-info [repo-info repo]
   (get repo-info repo))
 
-(defn repo-name-header [repo-name-filter]
-  [:th
-   "Repositories"
-   [:span.repositories-filter
-    [:input
-     {:type "search" :placeholder "filter by name"
-      :on-change (fn [e]
-                   (let [string (s/trim (.-value (.-target e)))]
-                     (reset! repo-name-filter string)))}]]])
-
 (defn has-substring? [sub target]
   (not (neg? (.indexOf target sub))))
 
