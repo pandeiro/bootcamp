@@ -106,7 +106,6 @@
   When a map entry is already present in the store, it is only merged
   if its :updated_at key is later than the existing entry's."
   [repo-info]
-  (info "Adding repo info: %s" (pr-str (first (keys repo-info))))
   (swap! stores/repo-info merge-if-newer repo-info))
 
 ;;; Worker

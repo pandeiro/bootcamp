@@ -5,6 +5,8 @@
             [clojure.string :as s]
             [reagent.core :as r]
             [cljs-http.client :as http]
+            [shodan.console :as console :include-macros true]
+            [shodan.inspection :refer [inspect]]
             [frontend.session :as session]
             [frontend.socket :as ws]))
 
@@ -82,20 +84,18 @@
         (.setAttribute svg "height" size)))))
 
 (defn boot-repo [repo-data boot-svg]
-  (let [logo-size 90]
-    (r/create-class
-     {:render
-      (fn [_]
-        [:div.row-container
-         (for [col boot-repo-columns]
-           (let [boot-repo-cell (get boot-repo-cells col)]
-             ^{:key (str (get-in repo-data [:repo :user])
-                         (get-in repo-data [:repo :repo])
-                         col)}
-             [boot-repo-cell repo-data]))])
-      :component-did-mount
-      (fn [this]
-        (mount-boot-logo-svg this boot-svg logo-size))})))
+  [:div.row-container
+   {:on-double-click
+    (fn [_]
+      (if (not-empty (:repo-info repo-data))
+        (inspect repo-data)
+        (session/put-event! [:repo-info-request (:repo repo-data)])))}
+   (for [col boot-repo-columns]
+     (let [boot-repo-cell (get boot-repo-cells col)]
+       ^{:key (str (get-in repo-data [:repo :user])
+                   (get-in repo-data [:repo :repo])
+                   col)}
+       [boot-repo-cell repo-data]))])
 
 (defn- get-repo-info [repo-info repo]
   (get repo-info repo))
@@ -110,33 +110,41 @@
 ;;     [:th (name col)]))
 
 (defn boot-repos-list [app-state]
-  (let [repo-name-filter (r/atom nil)]
+  (let [repo-name-filter (r/atom nil)
+        repo-sort-key    (r/atom :updated_at)
+        repo-sort-order  (r/atom :desc)]
     (retrieve-boot-svg app-state)
     (fn [_]
+      (console/log "boot-repos-list render")
       (let [boot-svg  (get-in @app-state [:data :assets :boot])
             repos     (get-in @app-state [:data :repos])
-            repo-info (get-in @app-state [:data :repo-info])]
+            repo-info (get-in @app-state [:data :repo-info])
+            displayed-repos (if (not-empty @repo-name-filter)
+                              (filter #(has-substring? @repo-name-filter (:repo %)) repos)
+                              repos)]
         [:div.repos.shortstack
+         [:div {:style {:display "flex"
+                        :flex-direction "row"
+                        :justify-content "space-between"
+                        :padding "0.5em 1em"}}
+          [:input {:type "text" :placeholder "filter by name"
+                   :style {:border "none"
+                           :background "none"
+                           :color "#ccc"
+                           :font-style "italic"}
+                   :on-change #(reset! repo-name-filter (s/trim (.-value (.-target %))))}]
+          [:p {:style {:margin 0
+                       :color "#985"}}
+           (str "Showing " (count displayed-repos) " repositories " )]]
          [:div.list-container
-          (for [repo repos]
+          (for [repo (let [repos displayed-repos]
+                       (if (= :desc @repo-sort-order)
+                         (reverse repos)
+                         repos))]
             ^{:key (str repo)}
             [boot-repo
              {:repo repo, :repo-info (get-repo-info repo-info repo)}
              boot-svg])]]))))
-
-(defn search [app-state]
-  (let [repos (get-in @app-state [:data :repos])]
-    [:div.search.pure-form
-     [:p.shortstack
-      (format "Search %d enlisted builds: " (count repos))]
-     [:input.shortstack
-      {:placeholder
-       "eg, \"with-pre-wrap\" or \"uberjar\" or \"alandipert\""
-       :on-key-down
-       (fn [e]
-         (when (= 13 (.-keyCode e))
-           ;; submit on enter? or filter while typing?
-           ))}]]))
 
 (defn main [app-state]
   [:div.container

@@ -7,7 +7,7 @@
                                     gh-repo-info-queue
                                     data-changed]]))
 
-(def connections
+(defonce connections
   (atom {}))
 
 (defn socket-handler [req]
@@ -32,14 +32,15 @@
                (when repo
                  (async/put! gh-repos-queue repo))))
            :cached-repo-info-data
-           (let [[repo repo-info] data]
-             (when (and repo repo-info)
-               (async/put! gh-repo-info-queue repo-info)))
+           (when (not-empty data)
+             (async/put! gh-repo-info-queue data))
            nil)
-         (info "Received socket data: %d repos and %d repo details"
-               (count (:repos data))
-               (count (:repo-info data)))
-         (httpkit/send! channel (pr-str {:message "Thank you!"})))))))
+         ;; example: echo
+         ;;
+         ;; (->> {:message "Thanks!"}
+         ;;   pr-str
+         ;;   (httpkit/send! channel))
+         )))))
 
 (go-loop []
   (<! data-changed)

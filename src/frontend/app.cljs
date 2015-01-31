@@ -6,12 +6,14 @@
    [cljs-http.client :as http]
    [cljs.core.async :as async :refer [<! chan]]
    [reagent.core :as r]
-   [frontend.debug :refer [debug-events]]
+   [shodan.console :as console :include-macros true]
+   [frontend.debug :as debug]
    [frontend.session :as session :refer [app-state new-client-id]]
    [frontend.net :as net]
    [frontend.socket :as ws]
    [frontend.github :as gh]
-   [frontend.views :as views]))
+   [frontend.views :as views]
+   [frontend.util :refer [once]]))
 
 (def root (.getElementById js/document "root"))
 
@@ -23,15 +25,21 @@
         (case event
           :repo-info-request
           (net/retrieve-github-repo-data app-state data)
+          :data-changed
+          (console/info "data changed so we would hit API here")
           nil)
         (recur)))))
 
 (defn init []
   (when-not (get-in @app-state [:data :client-id])
     (swap! app-state assoc-in [:data :client-id] (new-client-id)))
-  (debug-events app-state)
-  (net/retrieve-data app-state)
-  (gh/repo-info-worker app-state)
-  (ws/connect app-state)
+
+  (async/put! (:write-events @app-state) [:init (js/Date.)])
+
+  (once debug/debug-events  app-state)
+  (once net/retrieve-data   app-state)
+  (once gh/repo-info-worker app-state)
+  (once ws/connect          app-state)
+
   (r/render [views/main app-state] root))
 
