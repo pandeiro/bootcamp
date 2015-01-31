@@ -109,6 +109,12 @@
 ;;     [repo-name-header repo-name-filter]
 ;;     [:th (name col)]))
 
+(defn updated-at-sorter [[_ {:keys [updated_at]}]]
+  (or updated_at -1))
+
+(def boot-repos-sorters
+  {:updated_at updated-at-sorter})
+
 (defn boot-repos-list [app-state]
   (let [repo-name-filter (r/atom nil)
         repo-sort-key    (r/atom :updated_at)
@@ -119,9 +125,15 @@
       (let [boot-svg  (get-in @app-state [:data :assets :boot])
             repos     (get-in @app-state [:data :repos])
             repo-info (get-in @app-state [:data :repo-info])
-            displayed-repos (if (not-empty @repo-name-filter)
-                              (filter #(has-substring? @repo-name-filter (:repo %)) repos)
-                              repos)]
+            unified   (into {} (map #(vector % (get repo-info %)) repos))
+            displayed (if (not-empty @repo-name-filter)
+                        (filter #(has-substring? @repo-name-filter (:repo (first %))) unified)
+                        unified)
+            sorted    (sort-by (boot-repos-sorters @repo-sort-key)
+                               displayed)
+            ordered   (if (= :desc @repo-sort-order)
+                        (reverse sorted)
+                        sorted)]
         [:div.repos.shortstack
          [:div {:style {:display "flex"
                         :flex-direction "row"
@@ -135,16 +147,11 @@
                    :on-change #(reset! repo-name-filter (s/trim (.-value (.-target %))))}]
           [:p {:style {:margin 0
                        :color "#985"}}
-           (str "Showing " (count displayed-repos) " repositories " )]]
+           (str "Showing " (count displayed) " repositories " )]]
          [:div.list-container
-          (for [repo (let [repos displayed-repos]
-                       (if (= :desc @repo-sort-order)
-                         (reverse repos)
-                         repos))]
-            ^{:key (str repo)}
-            [boot-repo
-             {:repo repo, :repo-info (get-repo-info repo-info repo)}
-             boot-svg])]]))))
+          (for [[k v] ordered]
+            ^{:key (str k)}
+            [boot-repo {:repo k, :repo-info v} boot-svg])]]))))
 
 (defn main [app-state]
   [:div.container
