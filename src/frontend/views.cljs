@@ -57,8 +57,17 @@
           :target "_blank"}
       repo]]))
 
+(defn boot-repo-refresh [data]
+  (let [{:keys [repo]} (get-in data [:repo])]
+    [:button
+     {:style {:background "rgba(255,255,255,0.3)" :border-radius "2px"
+              :height "25px" :border "none" :color "#551"}
+      :on-click #(session/put-event! [:repo-info-request repo])}
+     "↺"]))
+
 (defn boot-repo-repository [data]
   [:div.row-item.repo
+   [boot-repo-refresh data]
    [boot-repo-user data]
    [boot-repo-name data]])
 
@@ -75,21 +84,13 @@
    :updated boot-repo-updated
    :stars   boot-repo-stars})
 
-(defn- mount-boot-logo-svg [parent svg-src size]
-  (let [el (.querySelector (r/dom-node parent) ".svg")]
-    (when el
-      (set! (.-innerHTML el) svg-src)
-      (let [svg (aget (.getElementsByTagName el "svg") 0)]
-        (.setAttribute svg "width" size)
-        (.setAttribute svg "height" size)))))
-
 (defn boot-repo [repo-data]
   [:div.row-container
    {:on-double-click
     (fn [_]
       (if (not-empty (:repo-info repo-data))
         (inspect repo-data)
-        (session/put-event! [:repo-info-request (:repo repo-data)])))}
+        ))}
    (for [col boot-repo-columns]
      (let [boot-repo-cell (get boot-repo-cells col)]
        ^{:key (str (get-in repo-data [:repo :user])
@@ -110,7 +111,7 @@
 ;;     [:th (name col)]))
 
 (defn updated-at-sorter [[_ {:keys [updated_at]}]]
-  (or updated_at -1))
+  (or updated_at ""))
 
 (def boot-repos-sorters
   {:updated_at updated-at-sorter})
@@ -120,7 +121,7 @@
         repo-sort-key    (r/atom :updated_at)
         repo-sort-order  (r/atom :desc)]
     (fn [_]
-      (let [{:keys [repo repo-info]} (get-in @app-state [:data])]
+      (let [{:keys [repos repo-info]} (get-in @app-state [:data])]
         (let [unified   (into {} (map #(vector % (get repo-info %)) repos))
               displayed (if (not-empty @repo-name-filter)
                           (filter #(has-substring? @repo-name-filter (:repo (first %))) unified)
@@ -136,7 +137,9 @@
                           :justify-content "space-between"
                           :padding "0.5em 1em"}}
             [:input {:type "text" :placeholder "filter by name"
-                     :style {:border "none"
+                     :style {:outline "none"
+                             :border "1px solid #da7"
+                             :padding "4px"
                              :background "none"
                              :color "#ccc"
                              :font-style "italic"}
