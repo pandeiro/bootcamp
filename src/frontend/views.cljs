@@ -83,7 +83,7 @@
         (.setAttribute svg "width" size)
         (.setAttribute svg "height" size)))))
 
-(defn boot-repo [repo-data boot-svg]
+(defn boot-repo [repo-data]
   [:div.row-container
    {:on-double-click
     (fn [_]
@@ -119,39 +119,35 @@
   (let [repo-name-filter (r/atom nil)
         repo-sort-key    (r/atom :updated_at)
         repo-sort-order  (r/atom :desc)]
-    (retrieve-boot-svg app-state)
     (fn [_]
-      (console/log "boot-repos-list render")
-      (let [boot-svg  (get-in @app-state [:data :assets :boot])
-            repos     (get-in @app-state [:data :repos])
-            repo-info (get-in @app-state [:data :repo-info])
-            unified   (into {} (map #(vector % (get repo-info %)) repos))
-            displayed (if (not-empty @repo-name-filter)
-                        (filter #(has-substring? @repo-name-filter (:repo (first %))) unified)
-                        unified)
-            sorted    (sort-by (boot-repos-sorters @repo-sort-key)
-                               displayed)
-            ordered   (if (= :desc @repo-sort-order)
-                        (reverse sorted)
-                        sorted)]
-        [:div.repos.shortstack
-         [:div {:style {:display "flex"
-                        :flex-direction "row"
-                        :justify-content "space-between"
-                        :padding "0.5em 1em"}}
-          [:input {:type "text" :placeholder "filter by name"
-                   :style {:border "none"
-                           :background "none"
-                           :color "#ccc"
-                           :font-style "italic"}
-                   :on-change #(reset! repo-name-filter (s/trim (.-value (.-target %))))}]
-          [:p {:style {:margin 0
-                       :color "#985"}}
-           (str "Showing " (count displayed) " repositories " )]]
-         [:div.list-container
-          (for [[k v] ordered]
-            ^{:key (str k)}
-            [boot-repo {:repo k, :repo-info v} boot-svg])]]))))
+      (let [{:keys [repo repo-info]} (get-in @app-state [:data])]
+        (let [unified   (into {} (map #(vector % (get repo-info %)) repos))
+              displayed (if (not-empty @repo-name-filter)
+                          (filter #(has-substring? @repo-name-filter (:repo (first %))) unified)
+                          unified)
+              sorted    (sort-by (boot-repos-sorters @repo-sort-key)
+                                 displayed)
+              ordered   (if (= :desc @repo-sort-order)
+                          (reverse sorted)
+                          sorted)]
+          [:div.repos.shortstack
+           [:div {:style {:display "flex"
+                          :flex-direction "row"
+                          :justify-content "space-between"
+                          :padding "0.5em 1em"}}
+            [:input {:type "text" :placeholder "filter by name"
+                     :style {:border "none"
+                             :background "none"
+                             :color "#ccc"
+                             :font-style "italic"}
+                     :on-change #(reset! repo-name-filter (s/trim (.-value (.-target %))))}]
+            [:p {:style {:margin 0
+                         :color "#985"}}
+             (str "Showing " (count displayed) " repositories " )]]
+           [:div.list-container
+            (for [[k v] ordered]
+              ^{:key (str k)}
+              [boot-repo {:repo k, :repo-info v}])]])))))
 
 (defn main [app-state]
   [:div.container
