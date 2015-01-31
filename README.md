@@ -1,7 +1,9 @@
 # bootcamp [![Build Status][badge]][build]
 
-Example project using [the boot build tool][boot] with the [boot-cljs],
-[boot-cljs-repl], and [boot-reload] tasks. Derived from [boot-cljs-example].
+Bootcamp is a server and clientside application that harvests data about
+existing [Boot][boot] projects from GitHub and displays it in the browser.
+
+Status: Working, still WIP
 
 ## Prepare
 
@@ -23,32 +25,8 @@ boot dev
 ```
 
 You can view the generated content by opening
-[http://localhost:8080/index.html](http://localhost:8080/index.html)
+[http://localhost:8080](http://localhost:8080)
 in your browser.
-
-## Start Browser REPL
-
-With the build pipeline humming in the background, you can connect to the running nREPL
-server with either your IDE or at the command line in a new terminal:
-
-```bash
-boot repl --client
-```
-
-or in Emacs:
-
-```
-M-x cider-connect
-```
-
-Then, you can start a CLJS REPL:
-
-```clojure
-boot.user=> (start-repl)
-```
-
-Reload the page in your browser.  Your REPL is now connected to the page. (If it's not, try touching
-one of the *.cljs files to trigger recompilation, refresh the page and try again.)
 
 ## License
 
@@ -59,11 +37,5 @@ your option) any later version.
 
 [badge]:            https://travis-ci.org/pandeiro/bootcamp.png?branch=devel
 [build]:            https://travis-ci.org/pandeiro/bootcamp
-[boot-cljs-example]: https://github.com/adzerk/boot-cljs-example
 [boot]:             https://github.com/boot-clj/boot
-[cider]:            https://github.com/clojure-emacs/cider
-[boot-cljs]:        https://github.com/adzerk/boot-cljs
-[boot-cljs-repl]:   https://github.com/adzerk/boot-cljs-repl
-[boot-reload]:      https://github.com/adzerk/boot-reload
 [installboot]:      https://github.com/boot-clj/boot#install
-[gclosure]:         https://developers.google.com/closure/compiler/
