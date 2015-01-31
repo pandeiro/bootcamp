@@ -31,7 +31,8 @@
   [:repo :updated :stars])
 
 (defn- rel-time [x]
-  (.fromNow (js/moment x)))
+  (when x
+    (.fromNow (js/moment x))))
 
 (defn github-avatar [url user size]
   [:a
