@@ -7,7 +7,7 @@
                    [deraen/boot-less          "0.2.0"      :scope "test"]
                    [adzerk/boot-reload        "0.2.4"      :scope "test"]
                    [adzerk/boot-test          "1.0.2"      :scope "test"]
-                   [adzerk/boot-cljs-repl     "0.1.8"      :scope "test"]
+                   [adzerk/boot-cljs-repl     "0.1.7"      :scope "test"]
 
                    ;; app
                    [org.clojure/core.async  "0.1.346.0-17112a-alpha"]
@@ -36,7 +36,7 @@
  '[deraen.boot-less      :refer [less]]
  '[adzerk.boot-reload    :refer [reload]]
  '[adzerk.boot-test      :refer [test]]
- '[adzerk.boot-cljs-repl :refer [cljs-repl]])
+ '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]])
 
 (deftask run-once
   "Run a function of no args just one time in a pipeline"
@@ -81,14 +81,19 @@
 (deftask serve-frontend []
   (serve :port 8080, :dir "target"))
 
+(deftask dev-cljs []
+  (comp
+   (cljs-repl)
+   (cljs :optimizations :none, :source-map true)))
+
 (deftask dev []
   (comp
    (serve-backend)
    (watch)
    (speak)
-   ;;(cljs-repl)
    (reload :on-jsload 'frontend.app/init)
-   (compile-frontend)
+   (less)
+   (dev-cljs)
    (serve-frontend)))
 
 (deftask ci []
