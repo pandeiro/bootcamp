@@ -25,7 +25,9 @@
                    [reagent                 "0.5.0-alpha"]
                    [shodan                  "0.4.1"]
                    [cljs-http               "0.1.24"]
-                   [alandipert/storage-atom "1.2.3"]])
+                   [alandipert/storage-atom "1.2.3"]
+                   [org.clojure/core.cache  "0.6.4"]
+                   [clj-webdriver           "0.6.1"]])
 
 (require
  '[boot.util             :as util]
