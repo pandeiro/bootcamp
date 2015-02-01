@@ -40,8 +40,7 @@
 
 (deftask run-once
   "Run a function of no args just one time in a pipeline"
-  [f function SYM  sym   "The function to run."
-   a args     ARGS [sym] "Any args to pass"]
+  [f function SYM  sym   "The function to run."]
   (let [worker (pod/make-pod (get-env))
         start  (delay (pod/with-eval-in worker
                         (require (symbol (namespace '~function)) :reload)
