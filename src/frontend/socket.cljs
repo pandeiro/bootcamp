@@ -16,6 +16,7 @@
     (set! (.-onopen socket)
           (fn [_]
             (let [data (:data @app-state)]
+              (send! [:init {:client-id (get-in data [:client-id])}])
               (send! [:cached-repos-data (:repos data)])
               ;; send kv-by-kv b/c of httpkit ws limitations
               (doseq [repo-info (:repo-info data)]

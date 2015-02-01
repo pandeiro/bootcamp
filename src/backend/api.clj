@@ -20,6 +20,12 @@
   (GET "/ws" []
     ws/socket-handler)
 
+  (GET "/debug" []
+    (resp/ok
+     {:ok true
+      :stuff [1 2 3]
+      :connections @ws/connections}))
+  
   (context "/api" []
 
     (GET "/repos" []

@@ -24,3 +24,7 @@ User-Agent: emacs
 # My API
 
 GET http://localhost:9090/api/repos
+
+# Debugging
+
+GET http://localhost:9090/debug

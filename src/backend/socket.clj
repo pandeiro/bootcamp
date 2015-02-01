@@ -13,7 +13,7 @@
 (defn socket-handler [req]
   (httpkit/with-channel req channel
 
-    (swap! connections assoc channel req)
+    (swap! connections assoc channel {:request req})
 
     (httpkit/on-close
      channel
@@ -25,7 +25,11 @@
      channel
      (fn [raw]
        (let [[topic data] (edn/read-string raw)]
+         (info "websocket received: %s" topic)
          (case topic
+           :init
+           (swap! connections update-in [channel] merge data)
+           ;; TODO: join client-id to channel in connections atom map
            :cached-repos-data
            (let [{:keys [repos]} data]
              (doseq [repo repos]
@@ -53,4 +57,5 @@
 ;;
 (add-watch connections :info
            (fn [_ _ _ n]
+             (info "DEBUG connections: " (pr-str n))
              (info "Current websocket connections: %d" (count n))))
