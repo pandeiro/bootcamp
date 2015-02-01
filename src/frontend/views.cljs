@@ -30,7 +30,7 @@
    (format "%s/%s" user repo)])
 
 (def boot-repo-columns
-  [:repo :updated :stars])
+  [:repo :updated])
 
 (defn- rel-time [x]
   (when x
@@ -53,36 +53,36 @@
   (let [repo (get-in data [:repo :repo])
         user (get-in data [:repo :user])]
     [:div.repo-name
+     {:style {:width "270px"}}
      [:a {:href (format "https://github.com/%s/%s" user repo)
           :target "_blank"}
       repo]]))
 
-(defn boot-repo-refresh [data]
-  (let [{:keys [repo]} (get-in data [:repo])]
-    [:button
-     {:style {:background "rgba(255,255,255,0.3)" :border-radius "2px"
-              :height "25px" :border "none" :color "#551"}
-      :on-click #(session/put-event! [:repo-info-request repo])}
-     "↺"]))
+(defn boot-repo-refresh [{:keys [repo]}]
+  [:div
+   [:button
+    {:style {:background "rgba(255,255,255,0.3)" :border-radius "2px"
+             :height "25px" :border "none" :color "#551"}
+     :on-click #(session/put-event! [:repo-info-request repo])}
+    "↺"]])
 
-(defn boot-repo-repository [data]
+(defn boot-repo-stars [data]
+  (let [stars (get-in data [:repo-info :stargazers_count])]
+    [:div {:style {:font-size "14px" :color "#532"}}
+     (when stars (str "★ " stars))]))
+
+(defn boot-repo-updated [data]
+  [:div.repo-updated {:style {:width "160px" :font-style "italic" :color "#542"
+                              :font-size "14px"}}
+   (rel-time (get-in data [:repo-info :updated_at]))])
+
+(defn boot-repo-row [data]
   [:div.row-item.repo
    [boot-repo-refresh data]
    [boot-repo-user data]
-   [boot-repo-name data]])
-
-(defn boot-repo-updated [data]
-  [:div.row-item.updated
-   (rel-time (get-in data [:repo-info :updated_at]))])
-
-(defn boot-repo-stars [data]
-  [:div.row-item.stars
-   (get-in data [:repo-info :stargazers_count])])
-
-(def boot-repo-cells
-  {:repo    boot-repo-repository
-   :updated boot-repo-updated
-   :stars   boot-repo-stars})
+   [boot-repo-name data]
+   [boot-repo-updated data]
+   [boot-repo-stars data]])
 
 (defn boot-repo [repo-data]
   [:div.row-container
@@ -91,12 +91,7 @@
       (if (not-empty (:repo-info repo-data))
         (inspect repo-data)
         ))}
-   (for [col boot-repo-columns]
-     (let [boot-repo-cell (get boot-repo-cells col)]
-       ^{:key (str (get-in repo-data [:repo :user])
-                   (get-in repo-data [:repo :repo])
-                   col)}
-       [boot-repo-cell repo-data]))])
+   [boot-repo-row repo-data]])
 
 (defn- get-repo-info [repo-info repo]
   (get repo-info repo))
