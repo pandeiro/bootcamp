@@ -1,8 +1,8 @@
 (set-env!
  :source-paths   #{"src" "less" "test"}
- :resource-paths #{"html" "conf" "data"}
+ :resource-paths #{"html" "conf"}
  :dependencies   '[;; boot
-                   [adzerk/boot-cljs          "0.0-2727-0" :scope "test"]
+                   [adzerk/boot-cljs          "0.0-2760-0" :scope "test"]
                    [pandeiro/boot-http        "0.6.1"      :scope "test"]
                    [deraen/boot-less          "0.2.0"      :scope "test"]
                    [adzerk/boot-reload        "0.2.4"      :scope "test"]
@@ -21,13 +21,14 @@
                    [enlive                  "1.1.5"]
                    [org.webjars/pure        "0.5.0"]
                    [cljsjs/react            "0.12.2-5"]
-                   [cljsjs/moment           "2.6.0-3"]
+                   [cljsjs/moment           "2.9.0-0"]
                    [reagent                 "0.5.0-alpha"]
                    [shodan                  "0.4.1"]
                    [cljs-http               "0.1.24"]
                    [alandipert/storage-atom "1.2.3"]
                    [org.clojure/core.cache  "0.6.4"]
-                   [clj-webdriver           "0.6.1"]])
+                   [clj-webdriver           "0.6.1"]
+                   [throttler               "1.0.0"]])
 
 (require
  '[boot.util             :as util]
@@ -68,8 +69,8 @@
   [d dev bool "Run in dev-mode with reloading of Clojure files"]
   (serve :port    9090
          :httpkit true
-         :init    'backend.services.github/start-worker
-         :cleanup 'backend.services.github/stop-worker
+         :init    'backend.workers/start-workers
+         :cleanup 'backend.workers/stop-workers
          :handler (if dev
                     'backend/system-dev
                     'backend/system)))

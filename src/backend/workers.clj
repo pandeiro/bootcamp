@@ -1,9 +1,12 @@
 (ns backend.workers
-  (:require [clojure.core.async :as async :refer [go-loop chan <! >!]]))
+  (:require
+   [backend.services.github :as gh]
+   [backend.socket :as ws]))
 
-(def jobs (chan))
+(defn start-workers []
+  (gh/start-worker)
+  (ws/start-notification-worker))
 
-(defn work! []
-  (go-loop []
-    (<! jobs)
-    (recur)))
+(defn stop-workers []
+  (gh/stop-worker)
+  (ws/stop-notification-worker))
