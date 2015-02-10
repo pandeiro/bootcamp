@@ -78,15 +78,13 @@
 (deftask compile-frontend []
   (comp
    (less)
-   (cljs :optimizations :none, :source-map true)))
+   (cljs :optimizations :advanced, :source-map true)))
 
 (deftask serve-frontend []
   (serve :port 8080, :dir "target"))
 
 (deftask dev-cljs []
-  (comp
-   (cljs-repl)
-   (cljs :optimizations :none, :source-map true)))
+  (cljs :optimizations :none, :source-map true))
 
 (deftask dev []
   (comp
