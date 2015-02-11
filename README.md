@@ -25,7 +25,7 @@ boot dev
 ```
 
 You can view the generated content by opening
-[http://localhost:8080](http://localhost:8080)
+[http://localhost:8484](http://localhost:8484)
 in your browser.
 
 ## License
