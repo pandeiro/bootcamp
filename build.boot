@@ -81,7 +81,7 @@
    (cljs :optimizations :advanced, :source-map true)))
 
 (deftask serve-frontend []
-  (serve :port 8080, :dir "target"))
+  (serve :port 8484, :dir "target"))
 
 (deftask dev-cljs []
   (cljs :optimizations :none, :source-map true))
