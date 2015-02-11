@@ -10,16 +10,15 @@ User-Agent: emacs
 GET https://github.com/search?utf8=%E2%9C%93&q=deftask+extension%3Aboot&type=Code&ref=searchresults
 User-Agent: emacs
 
-# API
-
-GET https://api.github.com/repos/octocat/Hello-World
-User-Agent: emacs
-
-# API
+# Github API: repository info
 
 GET https://api.github.com/repos/pandeiro/jamal
 User-Agent: emacs
 
+
+# Github API: get last commit ref
+GET https://api.github.com/repos/adzerk/boot-uberjar-example/git/refs/heads/master
+User-Agent: emacs
 
 # My API
 
