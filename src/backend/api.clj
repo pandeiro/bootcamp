@@ -31,4 +31,8 @@
     (GET "/repos" []
       (resp/ok {:ok        true
                 :repos     @stores/repos
-                :repo-info @stores/repo-info}))))
+                :repo-info @stores/repo-info}))
+
+    (GET "/stats" []
+      (resp/ok {:ok    true
+                :stats @stores/stats}))))

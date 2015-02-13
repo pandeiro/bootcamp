@@ -1,6 +1,7 @@
 (ns backend.util
-  (:import [java.time LocalDateTime]
-           [java.time.format DateTimeFormatter]))
+  (:import [java.time [LocalDateTime LocalDate]]
+           [java.time.format DateTimeFormatter]
+           [java.util Date]))
 
 (defn random-str []
   (.toString (java.util.UUID/randomUUID)))
@@ -17,3 +18,6 @@
   [string1 string2]
   (.compareTo (read-iso-date string1)
               (read-iso-date string2)))
+
+(defn now-as-date-string []
+  (.toString (LocalDate/now)))

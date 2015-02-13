@@ -10,8 +10,11 @@
   (when (not (neg? (.indexOf url "localhost")))
     (s/replace url #"localhost" (.-hostname js/window.location))))
 
-;; logic copied from backend.services.github
-(defn merge-if-newer [existing [entry-key entry-data]]
+;;
+;; Boot-camp API
+;;
+
+(defn merge-if-newer [existing [entry-key entry-data]] ; logic copied from backend.services.github
   (let [existing-entry (get existing entry-key)]
     (if (empty? existing-entry)
       (merge existing (vector entry-key entry-data))
@@ -50,6 +53,20 @@
                      users)]
               (swap! app-state assoc-in [:data :users user] info))))))))
 
+(defn retrieve-stats
+  "Retrieves statistics about the number of boot repos"
+  [app-state]
+  (let [{:keys [host api]} (get-in @app-state [:config :urls])
+        data-url           (str (dev-swap-hostname host) api "/stats")]
+    (go
+      (let [response (<! (http/get data-url {:with-credentials? false}))]
+        (when (= 200 (:status response))
+          (swap! app-state update-in [:data :stats] merge
+                 (get-in response [:body :stats])))))))
+
+;;
+;; Third-party
+;;
 (defn retrieve-github-repo-info-data [app-state {:keys [user repo] :as this-repo}]
   (let [data-url (str "https://api.github.com/repos/" user "/" repo)]
     (go

@@ -147,7 +147,26 @@
               ^{:key (str k)}
               [boot-repo {:repo k, :repo-info v}])]])))))
 
+(defn boot-repos-content [app-state]
+  [:div.content
+   [boot-repos-list app-state]])
+
+(defn boot-stats [app-state]
+  (let [stats (get-in @app-state stats)
+        [last-date {:keys [repos users]}] (last stats)]
+    [:svg
+     [:g
+      ]]
+    [:div (str "Repos: " repos)]
+    [:div (str "Users: " users)]))
+
+(defn boot-repos-stats [app-state]
+  [:div.sidebar
+   [:img {:src "img/sargeant.svg" :height 180}]
+   [:h1.londrina.all-caps "Boot Camp"]
+   [boot-stats app-state]])
+
 (defn main [app-state]
   [:div.container
-   ;;[search app-state]
-   [boot-repos-list app-state]])
+   [boot-repos-stats app-state]
+   [boot-repos-content app-state]])

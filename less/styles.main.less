@@ -28,25 +28,46 @@ body { -webkit-animation: androidBugfix infinite 1s; }
 }
 
 body {
-    background-image: url('../img/bg.jpg');
-    text-align: center;
-    font-size: 16px;
+  background-image: url('../img/bg.jpg');
+  text-align: center;
+  font-size: 16px;
 }
 
 a {
   color: @darkgray;
 }
 
-h1 {
-  margin-top: 24px;
-  margin-bottom: 12px;
-  color: @tan;
-  font-size: 128px;
-  text-shadow: 0 0 10px black;
-  letter-spacing: 6px;
+@media screen and (min-width: 31.42em) {
+
+  .sidebar {
+    top: 0;
+    left: 0;
+    position: fixed;
+    width: 33%;
+  }
+
+  .content {
+    margin-left: 33%;
+    width: 66%;
+  }
+}
+
+.sidebar {
+
+  
   img {
-    border-radius: 120px;
+    padding-top: 24px;
+    border-radius: 60px;
     background: radial-gradient(#fff, rgba(0,0,0,0) 70%);
+  }
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: @tan;
+    font-size: 64px;
+    text-shadow: 0 0 10px black;
+    letter-spacing: 4px;
   }
 }
 

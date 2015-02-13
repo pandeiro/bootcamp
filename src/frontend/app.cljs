@@ -41,6 +41,7 @@
 
   (once debug/debug-events  app-state)
   (once net/retrieve-data   app-state)
+  (once net/retrieve-stats  app-state)
   (once gh/repo-info-worker app-state)
   (once ws/connect          app-state)
 

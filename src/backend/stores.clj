@@ -7,7 +7,8 @@
    [environ.core :refer [env]]
    [backend.socket :as ws]
    [backend.logging :refer [info warn]]
-   [backend.queues :refer [data-changed]]))
+   [backend.queues :refer [data-changed]]
+   [backend.util :as u]))
 
 (info "Loading backend data stores")
 
@@ -23,6 +24,11 @@
   repo-info
   (atom {}))
 
+(defonce
+  ^{:doc
+    "Stores statistics about the number of repos and users"}
+  stats
+  (atom {}))
 
 ;;; Broadcast to data-changed
 
@@ -33,3 +39,10 @@
 
 (add-watch repos :broadcast broadcast-if-changed!)
 (add-watch repo-info :broadcast broadcast-if-changed!)
+
+;;; Stats
+
+(defn update-stat-count! [k r o n]
+  (swap! stats assoc (u/now-as-date-string) {:repos (count n), :users (count (set (map :user n)))}))
+
+(add-watch repos :stats update-stat-count!)
