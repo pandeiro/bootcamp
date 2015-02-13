@@ -9,6 +9,17 @@
   (when (not (neg? (.indexOf url "localhost")))
     (s/replace url #"localhost" (.-hostname js/window.location))))
 
+;; logic copied from backend.services.github
+(defn merge-if-newer [existing [entry-key entry-data]]
+  (let [existing-entry (get existing entry-key)]
+    (if (empty? existing-entry)
+      (merge existing (vector entry-key entry-data))
+      (let [updated-existing (get existing-entry :updated_at)
+            updated-new (get entry-data :updated_at)]
+        (if (pos? (u/compare-iso-dates updated-new updated-existing))
+          (merge existing (vector entry-key entry-data))
+          existing)))))
+
 (defn retrieve-data
   "Retrieves data on repositories from the API and merges the results into
   app-state."
