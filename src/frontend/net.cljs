@@ -3,7 +3,8 @@
   (:require [cljs.core.async :as async :refer [<! chan]]
             [clojure.set :as set]
             [clojure.string :as s]
-            [cljs-http.client :as http]))
+            [cljs-http.client :as http]
+            [frontend.util :as u]))
 
 (defn- dev-swap-hostname [url]
   (when (not (neg? (.indexOf url "localhost")))
