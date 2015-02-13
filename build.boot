@@ -65,6 +65,10 @@
 ;;    (cljs :source-map    true
 ;;          :optimizations :advanced)))
 
+;;
+;; Backend
+;;
+
 (deftask serve-backend
   [d dev bool "Run in dev-mode with reloading of Clojure files"]
   (serve :port    9090
@@ -74,6 +78,10 @@
          :handler (if dev
                     'backend/system-dev
                     'backend/system)))
+
+;;
+;; Frontend
+;;
 
 (deftask compile-frontend []
   (comp
@@ -86,15 +94,22 @@
 (deftask dev-cljs []
   (cljs :optimizations :none, :source-map true))
 
-(deftask dev []
+(deftask run-frontend []
   (comp
-   (serve-backend)
-   (watch)
-   (speak)
-   (reload :on-jsload 'frontend.app/init)
    (less)
    (dev-cljs)
    (serve-frontend)))
+
+;;
+;; Both (useful for development and CI)
+;;
+
+(deftask dev []
+  (comp
+   (serve-backend :dev true)
+   (watch)
+   (speak)
+   (run-frontend)))
 
 (deftask ci []
   (comp
