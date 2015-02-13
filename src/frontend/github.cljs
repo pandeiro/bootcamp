@@ -11,7 +11,6 @@
   in the app-state store (otherwise chosen randomly)"
   [app-state]
   (go-loop []
-    (console/log "repo-info-loggerz")
     (let [repos  (get-in @app-state [:data :repos])
           repo-info-repos (get-in @app-state [:data :repo-info])
           missing (set/difference repos (set (keys repo-info-repos)))
