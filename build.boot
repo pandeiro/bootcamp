@@ -17,7 +17,7 @@
                    [ring-cors               "0.1.6"]
                    [fogus/ring-edn          "0.2.0"]
                    [environ                 "1.0.0"]
-                   [http-kit                "2.1.18"]
+                   [http-kit                "2.1.19"]
                    [enlive                  "1.1.5"]
                    [org.webjars/pure        "0.5.0"]
                    [cljsjs/react            "0.12.2-5"]
