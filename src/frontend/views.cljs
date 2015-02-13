@@ -153,12 +153,15 @@
 
 (defn boot-stats [app-state]
   (let [stats (get-in @app-state [:data :stats])
-        [last-date {:keys [repos users]}] (last stats)]
-    [:svg
-     [:g
-      ]]
-    [:div (str "Repos: " repos)]
-    [:div (str "Users: " users)]))
+        repos (get-in @app-state [:data :repos])
+        repos-count (count repos)
+        users-count (count (set (map :user repos)))]
+    [:div.stats
+     [:svg
+      [:g
+       ]]
+     [:div (str "Repos: " repos-count)]
+     [:div (str "Users: " users-count)]]))
 
 (defn boot-repos-stats [app-state]
   [:div.sidebar
