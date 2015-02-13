@@ -34,10 +34,7 @@
                  set/union
                  (get-in response [:body :repos]))
           (swap! app-state update-in [:data :repo-info]
-                 ;; TODO: here you would want the same :updated_at check
-                 ;; logic that is used on the server-side so that a stale
-                 ;; server-side version doesn't overwrite a newer local one
-                 (partial merge-with merge)
+                 merge-if-newer
                  (get-in response [:body :repo-info]))
           (let [users (map (fn [[repo ri]]
                              {:user (:user repo)
