@@ -26,7 +26,7 @@
           :repo-info-request
           (net/retrieve-github-repo-data app-state data)
           :data-changed
-          (console/info "data changed so we would hit API here")
+          (net/retrieve-data app-state)
           nil)
         (recur)))))
 
