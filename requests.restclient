@@ -1,29 +1,35 @@
 -*- restclient -*-
 
+#
 # Github Search API
+#
 
+# Rate Limit check
 GET https://api.github.com/rate_limit
 User-Agent: emacs
 
-# Github webpage search
-
+# Search
 GET https://github.com/search?utf8=%E2%9C%93&q=deftask+extension%3Aboot&type=Code&ref=searchresults
 User-Agent: emacs
 
-# Github API: repository info
-
+# Repository info
 GET https://api.github.com/repos/pandeiro/jamal
 User-Agent: emacs
 
-
-# Github API: get last commit ref
+# Last commit ref
 GET https://api.github.com/repos/adzerk/boot-uberjar-example/git/refs/heads/master
 User-Agent: emacs
 
-# My API
+#
+# Boot-camp API
+#
 
+# Repos
 GET http://localhost:9090/api/repos
 
-# Debugging
+# Stats
+GET http://localhost:9090/api/stats
 
-GET http://localhost:9090/debug
+# Connections
+GET http://localhost:9090/api/conn
+
