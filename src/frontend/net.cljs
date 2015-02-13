@@ -38,9 +38,9 @@
               (swap! app-state update-in [:data :repo-info]
                      merge-if-newer
                      info)))
-          (let [users (map (fn [[repo ri]]
+          (let [users (map (fn [[repo repo-info-data]]
                              {:user (:user repo)
-                              :info ri})
+                              :info repo-info-data})
                            (get-in response [:body :repo-info]))]
             (doseq [{:keys [user info]}
                     (remove
