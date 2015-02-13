@@ -3,6 +3,7 @@
   (:require
    cljsjs.moment
    cljsjs.react
+   [clojure.data :refer [diff]]
    [cljs-http.client :as http]
    [cljs.core.async :as async :refer [<! chan]]
    [reagent.core :as r]
@@ -24,7 +25,9 @@
       (let [[event data] (<! tap)]
         (case event
           :repo-info-request
-          (net/retrieve-github-repo-data app-state data)
+          (net/retrieve-github-repo-info-data app-state data)
+          :repo-info-added
+          (ws/send! [:cached-repo-info-data data])
           :data-changed
           (net/retrieve-data app-state)
           nil)

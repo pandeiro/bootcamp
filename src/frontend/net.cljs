@@ -33,9 +33,11 @@
           (swap! app-state update-in [:data :repos]
                  set/union
                  (get-in response [:body :repos]))
-          (swap! app-state update-in [:data :repo-info]
-                 merge-if-newer
-                 (get-in response [:body :repo-info]))
+          (let [new-repo-info (get-in response [:body :repo-info])]
+            (doseq [info new-repo-info]
+              (swap! app-state update-in [:data :repo-info]
+                     merge-if-newer
+                     info)))
           (let [users (map (fn [[repo ri]]
                              {:user (:user repo)
                               :info ri})
@@ -48,15 +50,16 @@
                      users)]
               (swap! app-state assoc-in [:data :users user] info))))))))
 
-(defn retrieve-github-repo-data [app-state {:keys [user repo] :as this-repo}]
+(defn retrieve-github-repo-info-data [app-state {:keys [user repo] :as this-repo}]
   (let [data-url (str "https://api.github.com/repos/" user "/" repo)]
     (go
       (let [response (<! (http/get data-url {:with-credentials? false}))]
         (when (= (:status response) 200)
-          (async/put! (:write-events @app-state) [:repo-info-added this-repo])
-          (swap! app-state assoc-in
-                 [:data :repo-info this-repo]
-                 (get-in response [:body]))
-          (swap! app-state assoc-in
-                 [:data :users user]
-                 (get-in response [:body :owner])))))))
+          (let [body (get-in response [:body])]
+            (async/put! (:write-events @app-state) [:repo-info-added {this-repo body}])
+            (swap! app-state assoc-in
+                   [:data :repo-info this-repo]
+                   body)
+            (swap! app-state assoc-in
+                   [:data :users user]
+                   (get-in body [:owner]))))))))

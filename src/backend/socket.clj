@@ -26,6 +26,7 @@
      channel
      (fn [raw]
        (let [[topic data] (edn/read-string raw)]
+         (info "Socket received topic %s" topic)
          (case topic
 
            ;; Add :client-id to channel map in connections (as long as
@@ -42,7 +43,7 @@
            ;; Iterate through repos set and put each on queue
            :cached-repos-data
            (let [{:keys [repos]} data]
-             (doseq [repo repos]
+             (doseq [repo data]
                (when repo
                  (async/put! gh-repos-queue repo))))
 
