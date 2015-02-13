@@ -114,6 +114,7 @@
   (def worker
     (future
       (info "GitHub worker started...")
+
       ;; HTML page processing
       (go-loop []
         (let [html (<! gh-html-queue)]
@@ -121,14 +122,17 @@
             (when repo
               (async/put! gh-repos-queue repo)))
           (recur)))
+
       ;; Repos processing
       (go-loop []
         (add-repo! (<! gh-repos-queue))
         (recur))
+
       ;; Repo info processing
       (go-loop []
         (add-repo-info! (<! gh-repo-info-queue))
         (recur))
+
       ;; GH http request throttling
       (go-loop []
         (let [[topic data] (<! gh-req-queue)]
@@ -145,6 +149,7 @@
             nil)
           (<! (async/timeout (* 1000 60 10))) ; wait 10 minutes between requests
           (recur)))
+
       ;; GH search scheduling
       (go-loop []
         (info "Began GitHub search")
