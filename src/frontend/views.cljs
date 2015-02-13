@@ -152,7 +152,7 @@
    [boot-repos-list app-state]])
 
 (defn boot-stats [app-state]
-  (let [stats (get-in @app-state stats)
+  (let [stats (get-in @app-state [:data :stats])
         [last-date {:keys [repos users]}] (last stats)]
     [:svg
      [:g
