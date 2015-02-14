@@ -3,6 +3,7 @@
  :resource-paths #{"html" "conf"}
  :dependencies   '[;; boot
                    [adzerk/boot-cljs          "0.0-2760-0"     :scope "test"]
+                   [org.clojure/clojurescript "0.0-2850"       :scope "test"]
                    [pandeiro/boot-http        "0.6.3-SNAPSHOT" :scope "test"]
                    [deraen/boot-less          "0.2.0"          :scope "test"]
                    [adzerk/boot-reload        "0.2.4"          :scope "test"]
@@ -83,6 +84,21 @@
 ;; Frontend
 ;;
 
+(deftask browser-repl []
+  (require 'clojure.main 'cljs.repl 'cljs.repl.browser)
+  (with-pre-wrap fileset
+    (clojure.main/main "-e" "
+     (require
+      '[cljs.repl :as repl]
+      '[cljs.repl.browser :as browser])
+
+     (repl/repl* (browser/repl-env)
+                 {:output-dir     \".browser-repl\"
+                  :optimizations  :none
+                  :cache-analysis true                
+                  :source-map     true})")
+    fileset))
+
 (deftask compile-frontend []
   (comp
    (less)
@@ -115,3 +131,4 @@
   (comp
    (serve-backend)
    (compile-frontend)))
+
