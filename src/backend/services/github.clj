@@ -90,6 +90,7 @@
     (swap! stores/repos conj repo)
     (warn "Tried to add invalid repo: %s" (str repo))))
 
+;; TODO: Exception in thread "async-dispatch-25" java.lang.UnsupportedOperationException: nth not supported on this type: PersistentArrayMap
 (defn merge-if-newer [existing [entry-key entry-data]]
   (let [existing-entry (get existing entry-key)]
     (if (empty? existing-entry)

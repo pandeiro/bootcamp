@@ -3,6 +3,8 @@
   (:require
    cljsjs.moment
    cljsjs.react
+   cljs.repl
+   [clojure.browser.repl :as repl]
    [clojure.data :refer [diff]]
    [cljs-http.client :as http]
    [cljs.core.async :as async :refer [<! chan]]
@@ -15,6 +17,8 @@
    [frontend.github :as gh]
    [frontend.views :as views]
    [frontend.util :refer [once]]))
+
+(repl/connect "http://localhost:9000/repl")
 
 (def root (.getElementById js/document "root"))
 
