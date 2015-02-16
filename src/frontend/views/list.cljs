@@ -1,14 +1,17 @@
 (ns frontend.views.list
-  (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [cljs.core.async :as async :refer [chan <!]]
-            [goog.string.format]
-            [clojure.string :as s]
-            [reagent.core :as r]
-            [cljs-http.client :as http]
-            [shodan.console :as console :include-macros true]
-            [shodan.inspection :refer [inspect]]
-            [frontend.session :as session]
-            [frontend.socket :as ws]))
+  (:require-macros
+   [cljs.core.async.macros :refer [go]])
+  (:require
+   cljsjs.moment
+   [cljs.core.async :as async :refer [chan <!]]
+   [goog.string.format]
+   [clojure.string :as s]
+   [reagent.core :as r]
+   [cljs-http.client :as http]
+   [shodan.console :as console :include-macros true]
+   [shodan.inspection :refer [inspect]]
+   [frontend.session :as session]
+   [frontend.socket :as ws]))
 
 (def format goog.string/format)
 

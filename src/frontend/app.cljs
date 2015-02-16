@@ -1,12 +1,10 @@
 (ns frontend.app
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+  (:require-macros
+   [cljs.core.async.macros :refer [go go-loop]])
   (:require
-   cljsjs.moment
    cljsjs.react
    cljs.repl
    [clojure.browser.repl :as repl]
-   [clojure.data :refer [diff]]
-   [cljs-http.client :as http]
    [cljs.core.async :as async :refer [<! chan]]
    [reagent.core :as r]
    [shodan.console :as console :include-macros true]
