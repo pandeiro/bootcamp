@@ -111,12 +111,46 @@
 (defn updated-at-sorter [[_ {:keys [updated_at]}]]
   (or updated_at ""))
 
+(defn stars-sorter [[_ {:keys [stargazers_count]}]]
+  (or stargazers_count 0))
+
+(defn repo-name-sorter [[{:keys [repo]} _]]
+  repo)
+
 (def boot-repos-sorters
-  {:updated_at updated-at-sorter})
+  {:updated   updated-at-sorter
+   :stars     stars-sorter
+   :repo-name repo-name-sorter})
+
+(defn boot-repos-sortby [repo-sort-key]
+  [:div.sort
+   [:span
+    "Sort by: "]
+   [:select
+    {:on-change #(reset! repo-sort-key (keyword (.-value (.-target %))))}
+    [:option {:value "updated"} "updated"]
+    [:option {:value "stars"} "stars"]
+    [:option {:value "repo-name"} "repo name"]]])
+
+(defn- trimmed-val [e]
+  (s/trim (.-value (.-target e))))
+
+(defn boot-repos-filterby [repo-name-filter]
+  [:div.filter
+   [:span
+    "Filter by name: "]
+   [:input {:type "text" :placeholder "filter by name"
+            :style {:outline "none"
+                    :border "1px solid #da7"
+                    :padding "4px"
+                    :background "none"
+                    :color "#ccc"
+                    :font-style "italic"}
+            :on-change #(reset! repo-name-filter (trimmed-val %))}]])
 
 (defn boot-repos-list [app-state]
   (let [repo-name-filter (r/atom nil)
-        repo-sort-key    (r/atom :updated_at)
+        repo-sort-key    (r/atom :updated)
         repo-sort-order  (r/atom :desc)]
     (fn [_]
       (let [{:keys [repos repo-info]} (get-in @app-state [:data])]
@@ -130,18 +164,13 @@
                           (reverse sorted)
                           sorted)]
           [:div.repos.shortstack
-           [:div {:style {:display "flex"
-                          :flex-direction "row"
-                          :justify-content "space-between"
-                          :padding "0.5em 1em"}}
-            [:input {:type "text" :placeholder "filter by name"
-                     :style {:outline "none"
-                             :border "1px solid #da7"
-                             :padding "4px"
-                             :background "none"
-                             :color "#ccc"
-                             :font-style "italic"}
-                     :on-change #(reset! repo-name-filter (s/trim (.-value (.-target %))))}]
+           [:div.controls
+            {:style {:display "flex"
+                     :flex-direction "row"
+                     :justify-content "space-between"
+                     :padding "0.5em 1em"}}
+            [boot-repos-sortby repo-sort-key]
+
             [:p {:style {:margin 0
                          :color "#985"}}
              (str "Showing " (count displayed) " repositories " )]]
