@@ -139,13 +139,9 @@
   [:div.filter
    [:span
     "Filter by name: "]
-   [:input {:type "text" :placeholder "filter by name"
+   [:input {:type "text" :placeholder "eg, 'cljs'"
             :style {:outline "none"
-                    :border "1px solid #da7"
-                    :padding "4px"
-                    :background "none"
-                    :color "#ccc"
-                    :font-style "italic"}
+                    :padding "4px"}
             :on-change #(reset! repo-name-filter (trimmed-val %))}]])
 
 (defn boot-repos-list [app-state]
@@ -170,10 +166,7 @@
                      :justify-content "space-between"
                      :padding "0.5em 1em"}}
             [boot-repos-sortby repo-sort-key]
-
-            [:p {:style {:margin 0
-                         :color "#985"}}
-             (str "Showing " (count displayed) " repositories " )]]
+            [boot-repos-filterby repo-name-filter]]
            [:div.list-container
             (for [[k v] ordered]
               ^{:key (str k)}

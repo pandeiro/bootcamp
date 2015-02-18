@@ -107,15 +107,41 @@ button {
   // .pure-button;
 }
 
+.placeholder(@color) {
+  ::-webkit-input-placeholder {
+    color: @color;
+  }
+  :-moz-placeholder { /* Firefox 18- */
+    color: @color;
+  }
+  ::-moz-placeholder {  /* Firefox 19+ */
+    color: @color;
+  }
+  :-ms-input-placeholder {  
+    color: @color;
+  }
+}
+
 div.repos {
 
-  .sort {
+  .controls {
     span {
       color: @tan;
     }
+  }
+  .sort {
     select {
       margin: 4px;
       padding: 2px 4px;
+      background: @tan;
+      border: 1px black solid;
+    }
+  }
+  .filter {
+    input::-webkit-input-placeholder {
+      color: #5a5a5a;
+    }
+    input {
       background: @tan;
       border: 1px black solid;
     }
