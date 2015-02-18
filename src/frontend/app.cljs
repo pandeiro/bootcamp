@@ -3,8 +3,6 @@
    [cljs.core.async.macros :refer [go go-loop]])
   (:require
    cljsjs.react
-   cljs.repl
-   [clojure.browser.repl :as repl]
    [cljs.core.async :as async :refer [<! chan]]
    [reagent.core :as r]
    [shodan.console :as console :include-macros true]
@@ -15,8 +13,6 @@
    [frontend.github :as gh]
    [frontend.views :as views]
    [frontend.util :refer [once]]))
-
-(repl/connect "http://localhost:9000/repl")
 
 (def root (.getElementById js/document "root"))
 
