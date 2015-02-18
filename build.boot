@@ -2,13 +2,12 @@
  :source-paths   #{"src" "less" "test"}
  :resource-paths #{"html" "conf"}
  :dependencies   '[;; boot
-                   [adzerk/boot-cljs          "0.0-2760-0"     :scope "test"]
-                   [org.clojure/clojurescript "0.0-2850"       :scope "test"]
-                   [pandeiro/boot-http        "0.6.3-SNAPSHOT" :scope "test"]
-                   [deraen/boot-less          "0.2.0"          :scope "test"]
-                   [adzerk/boot-reload        "0.2.4"          :scope "test"]
-                   [adzerk/boot-test          "1.0.2"          :scope "test"]
-                   [adzerk/boot-cljs-repl     "0.1.7"          :scope "test"]
+                   [adzerk/boot-cljs       "0.0-2760-0"     :scope "test"]
+                   [pandeiro/boot-http     "0.6.3-SNAPSHOT" :scope "test"]
+                   [deraen/boot-less       "0.2.0"          :scope "test"]
+                   [adzerk/boot-reload     "0.2.4"          :scope "test"]
+                   [adzerk/boot-test       "1.0.2"          :scope "test"]
+                   [adzerk/boot-cljs-repl  "0.1.9"          :scope "test"]
 
                    ;; app
                    [org.clojure/core.async  "0.1.346.0-17112a-alpha"]
@@ -42,30 +41,6 @@
  '[adzerk.boot-test      :refer [test]]
  '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]])
 
-(deftask run-once
-  "Run a function of no args just one time in a pipeline"
-  [f function SYM  sym   "The function to run."]
-  (let [worker (pod/make-pod (get-env))
-        start  (delay (pod/with-eval-in worker
-                        (require (symbol (namespace '~function)) :reload)
-                        (def instance (future ((resolve '~function)))))
-                      (util/info "<< Running %s once... >>\n" (str function)))]
-    (cleanup
-     (util/info "<< Stopping instance of %s... >>\n" (str function))
-     (pod/with-eval-in worker
-       (future-cancel instance)))
-    (with-pre-wrap fileset
-      @start
-      fileset)))
-
-;; WIP
-;; (deftask release []
-;;   (comp
-;;    (less)
-;;    (add-react {:min? true})
-;;    (cljs :source-map    true
-;;          :optimizations :advanced)))
-
 ;;
 ;; Backend
 ;;
@@ -84,21 +59,6 @@
 ;; Frontend
 ;;
 
-(deftask browser-repl []
-  (require 'clojure.main 'cljs.repl 'cljs.repl.browser)
-  (with-pre-wrap fileset
-    (clojure.main/main "-e" "
-     (require
-      '[cljs.repl :as repl]
-      '[cljs.repl.browser :as browser])
-
-     (repl/repl* (browser/repl-env)
-                 {:output-dir     \".browser-repl\"
-                  :optimizations  :none
-                  :cache-analysis true                
-                  :source-map     true})")
-    fileset))
-
 (deftask compile-frontend []
   (comp
    (less)
@@ -108,10 +68,14 @@
   (serve :port 8484, :dir "target"))
 
 (deftask dev-cljs []
+  (cljs-repl)
   (cljs :optimizations :none, :source-map true))
 
 (deftask run-frontend []
   (comp
+   (watch)
+   (speak)
+   (reload :on-jsload 'frontend.app/init)
    (less)
    (dev-cljs)
    (serve-frontend)))
