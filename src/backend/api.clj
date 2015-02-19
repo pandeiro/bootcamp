@@ -33,4 +33,8 @@
 
     (GET "/conn" []
       (resp/ok {:ok   true
-                :conn @ws/connections}))))
+                :conn (mapv (fn [[channel {:keys [client-id connected-at]}]]
+                              {:client-id    client-id
+                               :connected-at connected-at
+                               :channel      channel})
+                            @ws/connections)}))))
