@@ -11,26 +11,27 @@
                    [adzerk/boot-cljs-repl  "0.1.9"          :scope "test"]
 
                    ;; app
-                   [org.clojure/core.async  "0.1.346.0-17112a-alpha"]
-                   [compojure               "1.3.1"]
-                   [ring/ring-defaults      "0.1.3"]
-                   [ring/ring-devel         "1.3.2"]
-                   [ring-cors               "0.1.6"]
-                   [fogus/ring-edn          "0.2.0"]
-                   [environ                 "1.0.0"]
-                   [pandeiro/http-kit       "2.1.20-SNAPSHOT"]
-                   [enlive                  "1.1.5"]
-                   [org.webjars/pure        "0.5.0"]
-                   [cljsjs/react            "0.12.2-5"]
-                   [cljsjs/moment           "2.9.0-0"]
-                   [reagent                 "0.5.0-alpha3"]
-                   [shodan                  "0.4.1"]
-                   [cljs-http               "0.1.24"
-                    :exclusions [com.cemerick/austin]]
-                   [alandipert/storage-atom "1.2.3"]
-                   [org.clojure/core.cache  "0.6.4"]
-                   [clj-webdriver           "0.6.1"]
-                   [throttler               "1.0.0"]])
+                   [org.clojure/core.async   "0.1.346.0-17112a-alpha"]
+                   [compojure                "1.3.1"]
+                   [ring/ring-defaults       "0.1.3"]
+                   [ring/ring-devel          "1.3.2"]
+                   [ring-cors                "0.1.6"]
+                   [fogus/ring-edn           "0.2.0"]
+                   [environ                  "1.0.0"]
+                   [pandeiro/http-kit        "2.1.20-SNAPSHOT"]
+                   [enlive                   "1.1.5"]
+                   [org.webjars/pure         "0.5.0"]
+                   [cljsjs/react-with-addons "0.12.2-6"]
+                   [cljsjs/moment            "2.9.0-0"]
+                   [reagent                  "0.5.0-alpha3"]
+                   [shodan                   "0.4.1"]
+                   [cljs-http                "0.1.24"
+                    :exclusions
+                    [com.cemerick/austin]]
+                   [alandipert/storage-atom  "1.2.3"]
+                   [org.clojure/core.cache   "0.6.4"]
+                   [clj-webdriver            "0.6.1"]
+                   [throttler                "1.0.0"]])
 
 (require
  '[boot.util             :as util]
