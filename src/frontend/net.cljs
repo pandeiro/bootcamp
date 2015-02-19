@@ -41,17 +41,20 @@
               (swap! app-state update-in [:data :repo-info]
                      merge-if-newer
                      info)))
-          (let [users (map (fn [[repo repo-info-data]]
-                             {:user (:user repo)
-                              :info repo-info-data})
-                           (get-in response [:body :repo-info]))]
-            (doseq [{:keys [user info]}
-                    (remove
-                     (fn [{:keys [user info]}]
-                       (let [existing-users (set (keys (get-in @app-state [:data :users])))]
-                         (existing-users user)))
-                     users)]
-              (swap! app-state assoc-in [:data :users user] info))))))))
+          (let [all-users
+                (map (fn [[repo repo-info-data]]
+                       {:user (:user repo)
+                        :info repo-info-data})
+                     (get-in response [:body :repo-info]))
+                missing-users
+                (remove
+                 (fn [{:keys [user info]}]
+                   (let [existing-users (set (keys (get-in @app-state [:data :users])))]
+                     (existing-users user)))
+                 all-users)]
+            (doseq [{:keys [user info]} missing-users]
+              (let [user-info (get-in info [:owner])]
+                (swap! app-state assoc-in [:data :users user] user-info)))))))))
 
 (defn retrieve-stats
   "Retrieves statistics about the number of boot repos"
