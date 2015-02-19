@@ -76,7 +76,7 @@
       (let [response (<! (http/get data-url {:with-credentials? false}))]
         (when (= (:status response) 200)
           (let [body (get-in response [:body])]
-            (async/put! (:write-events @app-state) [:repo-info-added {this-repo body}])
+            (async/put! (:write-events @app-state) [:repo-info-added [{this-repo body}]])
             (swap! app-state assoc-in
                    [:data :repo-info this-repo]
                    body)
