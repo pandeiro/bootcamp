@@ -3,6 +3,7 @@
  :resource-paths #{"html" "conf"}
  :dependencies   '[;; boot
                    [adzerk/boot-cljs       "0.0-2760-0"     :scope "test"]
+                   [org.clojure/clojurescript "0.0-2850"    :scope "test"]
                    [pandeiro/boot-http     "0.6.3-SNAPSHOT" :scope "test"]
                    [deraen/boot-less       "0.2.0"          :scope "test"]
                    [adzerk/boot-reload     "0.2.4"          :scope "test"]
@@ -22,9 +23,10 @@
                    [org.webjars/pure        "0.5.0"]
                    [cljsjs/react            "0.12.2-5"]
                    [cljsjs/moment           "2.9.0-0"]
-                   [reagent                 "0.5.0-alpha"]
+                   [reagent                 "0.5.0-alpha3"]
                    [shodan                  "0.4.1"]
-                   [cljs-http               "0.1.24"]
+                   [cljs-http               "0.1.24"
+                    :exclusions [com.cemerick/austin]]
                    [alandipert/storage-atom "1.2.3"]
                    [org.clojure/core.cache  "0.6.4"]
                    [clj-webdriver           "0.6.1"]
@@ -68,8 +70,9 @@
   (serve :port 8484, :dir "target"))
 
 (deftask dev-cljs []
-  (cljs-repl)
-  (cljs :optimizations :none, :source-map true))
+  (comp
+   (cljs-repl)
+   (cljs :optimizations :none, :source-map true)))
 
 (deftask run-frontend []
   (comp
