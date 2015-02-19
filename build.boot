@@ -31,7 +31,8 @@
                    [alandipert/storage-atom  "1.2.3"]
                    [org.clojure/core.cache   "0.6.4"]
                    [clj-webdriver            "0.6.1"]
-                   [throttler                "1.0.0"]])
+                   [throttler                "1.0.0"]
+                   [prismatic/schema         "0.3.7"]])
 
 (require
  '[boot.util             :as util]
