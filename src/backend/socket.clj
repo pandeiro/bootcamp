@@ -19,14 +19,14 @@
     (httpkit/on-close
      channel
      (fn [status]
-       (swap! connections dissoc channel)
-       (info "Socket closed: %s" status)))
+       (info "Socket closed: %s" status)
+       (info "Channel was: %s" (get connections channel))
+       (swap! connections dissoc channel)))
 
     (httpkit/on-receive
      channel
      (fn [raw]
        (let [[topic data] (edn/read-string raw)]
-         (info "Socket received topic %s" topic)
          (case topic
 
            ;; Add :client-id to channel map in connections (as long as
@@ -37,7 +37,7 @@
              (swap! connections update-in [channel]
                     (fn [{:keys [client-id] :as conn}]
                       (if-not client-id
-                        (merge conn data)
+                        (merge conn data {:connected-at (java.util.Date.)})
                         conn))))
 
            ;; Iterate through repos set and put each on queue
@@ -51,13 +51,8 @@
            :cached-repo-info-data
            (when (not-empty data)
              (async/put! gh-repo-info-queue data))
-           nil)
-         ;; example: echo
-         ;;
-         ;; (->> {:message "Thanks!"}
-         ;;   pr-str
-         ;;   (httpkit/send! channel))
-         )))))
+
+           nil))))))
 
 
 (defn start-notification-worker []

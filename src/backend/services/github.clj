@@ -94,9 +94,12 @@
 (defn merge-if-newer [existing [entry-key entry-data]]
   (let [existing-entry (get existing entry-key)]
     (if (empty? existing-entry)
-      (merge existing (vector entry-key entry-data))
+      (do
+        (info "no existing entry found for %s" entry-key)
+        (merge existing (vector entry-key entry-data)))
       (let [updated-existing (get existing-entry :updated_at)
             updated-new (get entry-data :updated_at)]
+        (info "found key for %s" entry-key)
         (if (pos? (u/compare-iso-dates updated-new updated-existing))
           (merge existing (vector entry-key entry-data))
           existing)))))
