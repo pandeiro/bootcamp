@@ -15,9 +15,9 @@
           repo-info-repos (get-in @app-state [:data :repo-info])
           missing (set/difference repos (set (keys repo-info-repos)))
           chosen (take 5 (shuffle missing))]
-      (<! (async/timeout (* 1000 60 10)))
-      (doseq [repo (if (pos? (count chosen))
+      (<! (async/timeout (* 1000 60 5)))
+      (doseq [repo (if (= 5 (count chosen))
                      chosen
-                     (take 5 (shuffle repos)))]
+                     (take (- 5 (count chosen)) (shuffle repos)))]
         (session/put-event! [:repo-info-request repo]))
       (recur))))
