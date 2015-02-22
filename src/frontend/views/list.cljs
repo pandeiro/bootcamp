@@ -8,10 +8,8 @@
    [clojure.string :as s]
    [reagent.core :as r]
    [cljs-http.client :as http]
-   [shodan.console :as console :include-macros true]
    [shodan.inspection :refer [inspect]]
-   [frontend.session :as session]
-   [frontend.socket :as ws]))
+   [frontend.session.state :as session]))
 
 (def format goog.string/format)
 
@@ -91,9 +89,8 @@
   [:div.row-container
    {:on-double-click
     (fn [_]
-      (if (not-empty (:repo-info repo-data))
-        (inspect repo-data)
-        ))}
+      (when (not-empty (:repo-info repo-data))
+        (inspect repo-data)))}
    [boot-repo-row repo-data]])
 
 (defn- get-repo-info [repo-info repo]

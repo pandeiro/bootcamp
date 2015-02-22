@@ -1,4 +1,4 @@
-(ns frontend.debug
+(ns frontend.util.debug
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs.core.async :as async :refer [<! chan]]
             [shodan.console :as console :include-macros true]))

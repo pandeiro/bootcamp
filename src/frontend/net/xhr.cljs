@@ -1,10 +1,10 @@
-(ns frontend.net
+(ns frontend.net.xhr
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs.core.async :as async :refer [<! chan]]
             [clojure.set :as set]
             [clojure.string :as s]
             [cljs-http.client :as http]
-            [frontend.util :as u]))
+            [frontend.util.helpers :as u]))
 
 (defn- dev-swap-hostname [url]
   (when (not (neg? (.indexOf url "localhost")))

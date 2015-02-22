@@ -1,4 +1,4 @@
-(ns frontend.util)
+(ns frontend.util.helpers)
 
 (defn once [f & args]
   (let [already? (atom nil)]
@@ -13,3 +13,8 @@
     (cond (< a b) -1
           (> a b) 1
           (= a b) 0)))
+
+(defn new-client-id []
+  (str
+   (.getTime (js/Date.)) "-"
+   (apply str (repeatedly 10 #(first (shuffle (range 10)))))))

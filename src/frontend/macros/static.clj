@@ -1,4 +1,4 @@
-(ns frontend.static
+(ns frontend.macros.static
   (:require
    [environ.core :refer [env]]
    [clojure.edn :as edn]

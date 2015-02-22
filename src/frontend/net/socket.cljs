@@ -1,7 +1,6 @@
-(ns frontend.socket
+(ns frontend.net.socket
   (:require [cljs.core.async :as async]
-            [cljs.reader :refer [read-string]]
-            [shodan.console :as console :include-macros true]))
+            [cljs.reader :refer [read-string]]))
 
 (defn connect [app-state]
   (let [ws-url (get-in @app-state [:config :urls :ws])

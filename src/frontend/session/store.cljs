@@ -1,4 +1,4 @@
-(ns frontend.store
+(ns frontend.session.store
   (:require
    [alandipert.storage-atom :refer [local-storage]]))
 

@@ -3,22 +3,24 @@
 Bootcamp is a server and clientside application that harvests data about
 existing [Boot][boot] projects from GitHub and displays it in the browser.
 
-Status: Working, still WIP
-
-## Prepare
-
-[Install boot][installboot].  Then, in a terminal:
-
-```bash
-boot -u
-```
-
-This will update boot to the latest stable release version. Since boot is
-pre-release software at the moment, you should do this frequently.
-
 ## Development
 
-In a terminal do:
+For development, I like to run the frontend and backend in different processes
+so that one can be restarted if necessary without stopping the other.
+
+```bash
+# start the backend
+boot serve-backend wait
+```
+
+And in another terminal:
+
+```bash
+boot run-frontend
+```
+
+If you would rather just run the application in one terminal only,
+you can combine the two with the `dev` task:
 
 ```bash
 boot dev
@@ -27,6 +29,19 @@ boot dev
 You can view the generated content by opening
 [http://localhost:8484](http://localhost:8484)
 in your browser.
+
+## Status
+
+### Outstanding Issues
+
+#### Zombie socket connections
+
+- Chrome/Chromium have an issue where refreshing the browser does not
+send a socket-close signal to the websocket server. As a result, the
+socket connections store can accumulate stale connections.
+- Relatedly, put!s are accumulating on the server when trying to send
+data-changed messages to all client connections
+- 
 
 ## License
 

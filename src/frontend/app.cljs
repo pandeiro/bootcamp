@@ -5,31 +5,15 @@
    cljsjs.react
    [cljs.core.async :as async :refer [<! chan]]
    [reagent.core :as r]
-   [shodan.console :as console :include-macros true]
-   [frontend.debug :as debug]
-   [frontend.session :as session :refer [app-state new-client-id]]
-   [frontend.net :as net]
-   [frontend.socket :as ws]
-   [frontend.github :as gh]
-   [frontend.views :as views]
-   [frontend.util :refer [once]]))
+   [frontend.util.debug :as debug]
+   [frontend.session.state :refer [app-state]]
+   [frontend.net.xhr :as xhr]
+   [frontend.net.socket :as ws]
+   [frontend.queues.github :as gh]
+   [frontend.views.main :as views]
+   [frontend.util.helpers :refer [once new-client-id]]))
 
 (def root (.getElementById js/document "root"))
-
-(defonce event-loop
-  (let [tap (chan)]
-    (async/tap (:read-events @app-state) tap)
-    (go-loop []
-      (let [[event data] (<! tap)]
-        (case event
-          :repo-info-request
-          (net/retrieve-github-repo-info-data app-state data)
-          :repo-info-added
-          (ws/send! [:cached-repo-info-data data])
-          :data-changed
-          (net/retrieve-data app-state)
-          nil)
-        (recur)))))
 
 (defn init []
   (when-not (get-in @app-state [:data :client-id])
@@ -38,9 +22,8 @@
   (async/put! (:write-events @app-state) [:init (js/Date.)])
 
   (once debug/debug-events  app-state)
-  (once net/retrieve-data   app-state)
-  (once net/retrieve-stats  app-state)
-  (once gh/repo-info-worker app-state)
+  (once xhr/retrieve-data   app-state)
+  (once xhr/retrieve-stats  app-state)
   (once ws/connect          app-state)
 
   (r/render [views/main app-state] root))

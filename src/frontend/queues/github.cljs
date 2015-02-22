@@ -1,9 +1,9 @@
-(ns frontend.github
+(ns frontend.queues.github
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [cljs.core.async :as async :refer [chan <!]]
             [clojure.set :as set]
             [shodan.console :as console :include-macros true]
-            [frontend.session :as session]))
+            [frontend.session.state :as session]))
 
 (defn repo-info-worker
   "Polls the GitHub API for repository information about 5 repos after

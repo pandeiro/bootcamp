@@ -1,8 +1,8 @@
-(ns frontend.session
-  (:require-macros [frontend.static :as static])
+(ns frontend.session.state
+  (:require-macros [frontend.macros.static :as static])
   (:require [cljs.core.async :as async :refer [<! chan]]
             [reagent.core :as r]
-            [frontend.store :refer [store watch-and-store]]))
+            [frontend.session.store :refer [store watch-and-store]]))
 
 (defonce ^{:doc "
 Application state holding atom.
@@ -27,12 +27,6 @@ sensitive configuration."}
 (defn put-event! [data]
   (async/put! (:write-events @app-state) data))
 
-;;
-;; Helpers
-;;
-(defn new-client-id []
-  (str
-   (.getTime (js/Date.)) "-"
-   (apply str (repeatedly 10 #(first (shuffle (range 10)))))))
+
 
 
