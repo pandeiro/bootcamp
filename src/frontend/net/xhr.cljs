@@ -14,15 +14,15 @@
 ;; Boot-camp API
 ;;
 
-(defn merge-if-newer [existing [entry-key entry-data]] ; logic copied from backend.services.github
-  (let [existing-entry (get existing entry-key)]
-    (if (empty? existing-entry)
-      (merge existing (vector entry-key entry-data))
-      (let [updated-existing (get existing-entry :updated_at)
-            updated-new (get entry-data :updated_at)]
-        (if (pos? (u/compare-iso-dates updated-new updated-existing))
-          (merge existing (vector entry-key entry-data))
-          existing)))))
+(defn merge-if-newer [repo-info [repo gh-resp]]
+  (let [existing-info (get repo-info repo)]
+    (if (empty? existing-info)
+      (merge repo-info {repo gh-resp})
+      (let [updated-prev (get existing-info :updated_at)
+            updated-new  (get gh-resp :updated_at)]
+        (if (pos? (u/compare-iso-dates updated-new updated-prev))
+          (merge repo-info {repo gh-resp})
+          repo-info)))))
 
 (defn retrieve-data
   "Retrieves data on repositories from the API and merges the results into
@@ -76,10 +76,4 @@
       (let [response (<! (http/get data-url {:with-credentials? false}))]
         (when (= (:status response) 200)
           (let [body (get-in response [:body])]
-            (async/put! (:write-events @app-state) [:repo-info-added [{this-repo body}]])
-            (swap! app-state assoc-in
-                   [:data :repo-info this-repo]
-                   body)
-            (swap! app-state assoc-in
-                   [:data :users user]
-                   (get-in body [:owner]))))))))
+            (async/put! (:write-events @app-state) [:repo-info-added [this-repo body]])))))))
