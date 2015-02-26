@@ -12,12 +12,24 @@
     (go-loop []
       (let [[event data] (<! tap)]
         (case event
+
           :repo-info-request
           (xhr/retrieve-github-repo-info-data app-state data)
+
           :repo-info-added
-          (ws/send! [:cached-repo-info-data data])
+          (let [[repo resp] data
+                user        (get-in repo [:user])
+                user-data   (get-in resp [:owner])]
+            (swap! app-state assoc-in [:data :repo-info repo] resp)
+            (swap! app-state assoc-in [:data :users user] user-data)
+            (ws/send! [:cached-repo-info-data [repo resp]]))
+
           :data-changed
-          (xhr/retrieve-data app-state)
+          (let []
+            (.log js/console ":data-changed")
+            (xhr/retrieve-data app-state))
+
           nil)
+
         (recur)))))
 

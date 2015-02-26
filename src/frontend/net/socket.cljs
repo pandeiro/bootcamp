@@ -28,6 +28,6 @@
      (.-onmessage socket)
      (fn [e]
        (let [data (read-string (.-data e))]
-         (async/put! (:write-events @app-state) [:message data]))))
+         (async/put! (:write-events @app-state) data))))
 
     ))
