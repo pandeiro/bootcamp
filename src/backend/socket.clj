@@ -58,12 +58,14 @@
 (defn start-notification-worker []
   (def notification-worker
     (future
-      (let [data-changed* (throttle-chan data-changed 6 :hour)]
+      ;; TODO: transfer this and other 'settings' to an EDN config file
+      (let [data-changed* (throttle-chan data-changed 12 :hour 1)] ; once every 5 minutes
         (go-loop []
           (<! data-changed*)
           (info "Data changed, broadcasting to sockets")
-          (doseq [[channel _] @connections]
-            (httpkit/send! channel (pr-str [:data-changed nil])))
+          (doseq [[channel {:keys [client-id]}] @connections]
+            (let [msg (str (httpkit/send! channel (pr-str [:data-changed nil])))]
+              (info "Sent to client %s? %s" client-id msg)))
           (recur))))))
 
 (defn stop-notification-worker []
