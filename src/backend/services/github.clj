@@ -90,19 +90,15 @@
     (swap! stores/repos conj repo)
     (warn "Tried to add invalid repo: %s" (str repo))))
 
-;; TODO: Exception in thread "async-dispatch-25" java.lang.UnsupportedOperationException: nth not supported on this type: PersistentArrayMap
-(defn merge-if-newer [existing [entry-key entry-data]]
-  (let [existing-entry (get existing entry-key)]
-    (if (empty? existing-entry)
-      (do
-        (info "no existing entry found for %s" entry-key)
-        (merge existing (vector entry-key entry-data)))
-      (let [updated-existing (get existing-entry :updated_at)
-            updated-new (get entry-data :updated_at)]
-        (info "found key for %s" entry-key)
-        (if (pos? (u/compare-iso-dates updated-new updated-existing))
-          (merge existing (vector entry-key entry-data))
-          existing)))))
+(defn merge-if-newer [repo-info [repo gh-resp]]
+  (let [existing-info (get repo-info repo)]
+    (if (empty? existing-info)
+      (merge repo-info {repo gh-resp})
+      (let [updated-prev (get existing-info :updated_at)
+            updated-new  (get gh-resp :updated_at)]
+        (if (pos? (u/compare-iso-dates updated-new updated-prev))
+          (merge repo-info {repo gh-resp})
+          repo-info)))))
 
 (defn add-repo-info!
   "Merges a repo-info map into the existing store.
@@ -158,7 +154,7 @@
       (go-loop []
         (info "Began GitHub search")
         (search-github)
-        (<! (async/timeout (* 1000 60 60 24)))
+        (<! (async/timeout (* 1000 60 60 12))) ; every 12 hours
         (recur)))))
 
 (defn stop-worker []

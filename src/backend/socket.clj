@@ -11,6 +11,14 @@
 (defonce connections
   (atom {}))
 
+(defn try-read-socket [raw]
+  (try
+    (edn/read-string raw)
+    (catch Exception e
+      (warn "Could not read socket message: %s" raw)
+      (warn "Socket message size: %d bytes" (count (.getBytes raw)))
+      nil)))
+
 (defn socket-handler [req]
   (httpkit/with-channel req channel
 
@@ -26,33 +34,36 @@
     (httpkit/on-receive
      channel
      (fn [raw]
-       (let [[topic data] (edn/read-string raw)]
-         (case topic
+       (when-let [message (try-read-socket raw)]
+         (if (symbol? message)
+           (warn "Socket event parsed as symbol: %s" message)
+           (let [[topic data] message]
+             (case topic
 
-           ;; Add :client-id to channel map in connections (as long as
-           ;; there isn't an existing client-id for that channel)
-           :init
-           (do
-             (info "initial websocket connection from %s" (pr-str data))
-             (swap! connections update-in [channel]
-                    (fn [{:keys [client-id] :as conn}]
-                      (if-not client-id
-                        (merge conn data {:connected-at (java.util.Date.)})
-                        conn))))
+               ;; Add :client-id to channel map in connections (as long as
+               ;; there isn't an existing client-id for that channel)
+               :init
+               (do
+                 (info "initial websocket connection from %s" (pr-str data))
+                 (swap! connections update-in [channel]
+                        (fn [{:keys [client-id] :as conn}]
+                          (if-not client-id
+                            (merge conn data {:connected-at (java.util.Date.)})
+                            conn))))
 
-           ;; Iterate through repos set and put each on queue
-           :cached-repos-data
-           (let [{:keys [repos]} data]
-             (doseq [repo data]
-               (when repo
-                 (async/put! gh-repos-queue repo))))
+               ;; Iterate through repos set and put each on queue
+               :cached-repos-data
+               (let [{:keys [repos]} data]
+                 (doseq [repo data]
+                   (when repo
+                     (async/put! gh-repos-queue repo))))
 
-           ;; 
-           :cached-repo-info-data
-           (when (not-empty data)
-             (async/put! gh-repo-info-queue data))
+               ;;
+               :cached-repo-info-data
+               (when (not-empty data)
+                 (async/put! gh-repo-info-queue data))
 
-           nil))))))
+               nil))))))))
 
 
 (defn start-notification-worker []
