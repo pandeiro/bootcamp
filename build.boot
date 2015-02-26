@@ -2,13 +2,16 @@
  :source-paths   #{"src" "less" "test"}
  :resource-paths #{"html" "conf"}
  :dependencies   '[;; boot
-                   [adzerk/boot-cljs       "0.0-2760-0"     :scope "test"]
-                   [org.clojure/clojurescript "0.0-2850"    :scope "test"]
-                   [pandeiro/boot-http     "0.6.3-SNAPSHOT" :scope "test"]
-                   [deraen/boot-less       "0.2.0"          :scope "test"]
-                   [adzerk/boot-reload     "0.2.4"          :scope "test"]
-                   [adzerk/boot-test       "1.0.2"          :scope "test"]
-                   [adzerk/boot-cljs-repl  "0.1.9"          :scope "test"]
+                   [adzerk/boot-cljs          "0.0-2760-0"     :scope "test"]
+                   [pandeiro/boot-http        "0.6.3-SNAPSHOT" :scope "test"]
+                   [deraen/boot-less          "0.2.0"          :scope "test"]
+                   [adzerk/boot-reload        "0.2.4"          :scope "test"]
+                   [adzerk/boot-test          "1.0.2"          :scope "test"]
+                   [adzerk/boot-cljs-repl     "0.1.9"          :scope "test"]
+
+                   ;; override included versions
+                   [org.clojure/clojurescript "0.0-2913"       :scope "test"]
+                   [org.clojure/tools.nrepl   "0.2.7"          :scope "test"]
 
                    ;; app
                    [org.clojure/core.async   "0.1.346.0-17112a-alpha"]
@@ -21,7 +24,7 @@
                    [pandeiro/http-kit        "2.1.20-SNAPSHOT"]
                    [enlive                   "1.1.5"]
                    [org.webjars/pure         "0.5.0"]
-                   [cljsjs/react-with-addons "0.12.2-6"]
+                   [cljsjs/react-with-addons "0.12.2-7"]
                    [cljsjs/moment            "2.9.0-0"]
                    [reagent                  "0.5.0-alpha3"]
                    [shodan                   "0.4.1"]
@@ -31,8 +34,7 @@
                    [alandipert/storage-atom  "1.2.3"]
                    [org.clojure/core.cache   "0.6.4"]
                    [clj-webdriver            "0.6.1"]
-                   [throttler                "1.0.0"]
-                   [prismatic/schema         "0.3.7"]])
+                   [throttler                "1.0.0"]])
 
 (require
  '[boot.util             :as util]
