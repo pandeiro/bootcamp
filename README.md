@@ -32,16 +32,7 @@ in your browser.
 
 ## Status
 
-### Outstanding Issues
-
-#### Zombie socket connections
-
-- Chrome/Chromium have an issue where refreshing the browser does not
-send a socket-close signal to the websocket server. As a result, the
-socket connections store can accumulate stale connections.
-- Relatedly, put!s are accumulating on the server when trying to send
-data-changed messages to all client connections
-- 
+Work in Progress
 
 ## License
 
