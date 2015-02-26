@@ -7,6 +7,20 @@
    [frontend.views.stats :refer [boot-stats]]
    [frontend.views.list :refer [boot-repos-list]]))
 
+(defn notifier [app-state]
+  (r/create-class
+   {:render
+    (fn [_]
+      [:div.notifier
+       (when-let [notification (:notification @app-state)]
+         [:div
+          [:span notification]
+          [:button {:on-click (fn [_])} "X"]])])
+    :component-did-update
+    (fn [this]
+      (when (not-empty (:notification @app-state))
+        (js/setTimeout #(swap! app-state assoc :notification ""))))}))
+
 (defn boot-repos-content [app-state]
   [:div.content
    [boot-repos-list app-state]])
@@ -22,6 +36,7 @@
    {:reagent-render
     (fn [app-state]
       [:div.container
+       [notifier app-state]
        [boot-repos-sidebar app-state]
        [boot-repos-content app-state]])
     :component-did-mount
