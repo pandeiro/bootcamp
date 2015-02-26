@@ -75,6 +75,6 @@
 ;; Logging
 ;;
 (add-watch connections :info
-           (fn [_ _ _ n]
-             (info "DEBUG connections: " (pr-str n))
-             (info "Current websocket connections: %d" (count n))))
+           (fn [_ _ o n]
+             (when-not (= (count o) (count n))
+               (info "Current websocket connections: %d" (count n)))))
