@@ -26,7 +26,9 @@
                    [org.webjars/pure         "0.5.0"]
                    [cljsjs/react-with-addons "0.12.2-7"]
                    [cljsjs/moment            "2.9.0-0"]
-                   [reagent                  "0.5.0-alpha3"]
+                   [reagent                  "0.5.0-alpha3"
+                    :exclusions
+                    [cljsjs/react]]
                    [shodan                   "0.4.1"]
                    [cljs-http                "0.1.24"
                     :exclusions
